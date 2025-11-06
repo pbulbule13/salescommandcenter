@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .tab-active { border-bottom: 3px solid #3B82F6; color: #3B82F6; font-weight: 600; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .notification-badge {
+            position: absolute; top: -8px; right: -8px; background: #EF4444;
+            color: white; border-radius: 9999px; width: 20px; height: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: bold;
+        }
+        .metric-card { transition: transform 0.2s; }
+        .metric-card:hover { transform: translateY(-2px); }
+        .voice-recording { animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 380px;
+            background: white;
+            border-right: 2px solid #E5E7EB;
+            z-index: 100;
+            overflow-y: auto;
+        }
+        .main-content {
+            margin-left: 380px;
+        }
+        .chat-messages {
+            max-height: calc(100vh - 400px);
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <!-- AI Assistant Sidebar (Persistent) -->
+    <div class="sidebar shadow-xl">
+        <div class="p-6 border-b-2 border-blue-600 bg-gradient-to-r from-blue-600 to-indigo-700">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
+                    <span class="text-2xl">🤖</span>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">AI Assistant</h2>
+                    <p class="text-xs text-blue-100">Always here to help</p>
+                </div>
+            </div>
+            <button onclick="startVoiceQuery()" id="voiceBtn" class="w-full px-4 py-2 bg-white text-blue-700 rounded-lg hover:bg-blue-50 font-medium text-sm">
+                🎤 Voice Command
+            </button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="aiChatMessages" class="chat-messages p-4 bg-gray-50">
+            <div class="text-center text-gray-500 text-sm">
+                <p class="mb-2">👋 Welcome! Ask me anything:</p>
+                <ul class="text-left mt-3 space-y-1 text-xs">
+                    <li>• "Show me pending orders today"</li>
+                    <li>• "Create order for Disney, 500 tablets"</li>
+                    <li>• "What's my pipeline for Q1?"</li>
+                    <li>• "Compare this month vs last month"</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 border-t border-gray-200 bg-white">
+            <div class="flex gap-2 mb-2">
+                <input type="text" id="aiQueryInput" placeholder="Ask anything..."
+                       class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-sm"
+                       onkeypress="if(event.key==='Enter') askAI()"/>
+                <button onclick="askAI()" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:opacity-90 font-medium text-sm">
+                    Send
+                </button>
+            </div>
+            <div class="flex flex-wrap gap-1">
+                <button onclick="askQuick('How many orders today?')"
+                        class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs hover:bg-blue-200">
+                    Today's orders
+                </button>
+                <button onclick="askQuick('Pending > $100K')"
+                        class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs hover:bg-green-200">
+                    Large orders
+                </button>
+                <button onclick="askQuick('Regional performance')"
+                        class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs hover:bg-purple-200">
+                    Regions
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="p-4 border-t border-gray-200">
+            <h3 class="text-xs font-bold text-gray-600 mb-2">QUICK ACTIONS</h3>
+            <div class="space-y-2">
+                <button onclick="startVoiceOrder()" class="w-full px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:opacity-90 text-sm font-medium">
+                    🎤 Create Order (Voice)
+                </button>
+                <button onclick="generateReport()" class="w-full px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:opacity-90 text-sm font-medium">
+                    📊 Generate Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Top Navigation -->
+        <nav class="bg-white shadow-lg border-b-2 border-blue-600 sticky top-0 z-50">
+            <div class="max-w-full mx-auto px-6 py-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg">
+                            <span class="text-white font-bold text-xl">S</span>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-800">Sales Command Center</h1>
+                            <p class="text-xs text-gray-600">Real-Time Sales Intelligence | <span id="currentDate"></span></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <div class="text-center">
+                            <p class="text-xs text-gray-500">Today's Revenue</p>
+                            <p class="text-2xl font-bold text-green-600" id="headerRevenue">$0</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xs text-gray-500">Q4 Progress</p>
+                            <p class="text-2xl font-bold text-blue-600" id="headerQuarterProgress">0%</p>
+                        </div>
+                        <div class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-full flex items-center justify-center text-white font-bold cursor-pointer">
+                            <span id="userInitials">VP</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tab Navigation -->
+                <div class="flex gap-1 mt-4 border-b overflow-x-auto">
+                    <button onclick="switchTab('overview')" id="tab-overview" class="px-4 py-2 text-sm tab-active whitespace-nowrap">
+                        📊 Overview
+                    </button>
+                    <button onclick="switchTab('pipeline')" id="tab-pipeline" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
+                        🔄 Pipeline
+                    </button>
+                    <button onclick="switchTab('orders')" id="tab-orders" class="px-4 py-2 text-sm hover:bg-gray-50 relative whitespace-nowrap">
+                        📦 Orders <span class="notification-badge" id="ordersNotif">0</span>
+                    </button>
+                    <button onclick="switchTab('customers')" id="tab-customers" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
+                        🏢 Customers
+                    </button>
+                    <button onclick="switchTab('products')" id="tab-products" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
+                        🎯 Products
+                    </button>
+                    <button onclick="switchTab('insights')" id="tab-insights" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
+                        💡 Insights
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content Container -->
+        <div class="max-w-full mx-auto px-6 py-6">
+
+            <!-- OVERVIEW TAB -->
+            <div id="content-overview" class="tab-content fade-in">
+                <!-- Key Metrics Row -->
+                <div class="grid grid-cols-5 gap-4 mb-6">
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Orders Fulfilled Today</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="ordersFulfilled">0</p>
+                        <p class="text-sm text-green-600 mt-1" id="ordersFulfilledChange">↑ 0% vs yesterday</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Orders Pending</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="ordersPending">0</p>
+                        <p class="text-sm text-yellow-600 mt-1" id="ordersPendingValue">$0</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Orders Received Today</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="ordersReceived">0</p>
+                        <p class="text-sm text-blue-600 mt-1" id="ordersReceivedValue">$0</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Pipeline Value</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="pipelineValue">$0</p>
+                        <p class="text-sm text-purple-600 mt-1" id="pipelineDeals">0 deals</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Win Rate</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="winRate">0%</p>
+                        <p class="text-sm text-orange-600 mt-1" id="winRateChange">↓ 0% vs last month</p>
+                    </div>
+                </div>
+
+                <!-- Charts and Details Row -->
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Revenue Trend Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">Revenue Trend</h3>
+                            <select class="text-sm border rounded px-2 py-1" onchange="updateRevenueTrend(this.value)">
+                                <option value="7">Last 7 Days</option>
+                                <option value="30">Last 30 Days</option>
+                                <option value="90">Last 90 Days</option>
+                            </select>
+                        </div>
+                        <canvas id="revenueTrendChart" height="200"></canvas>
+                    </div>
+
+                    <!-- Regional Performance -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Regional Performance</h3>
+                        <canvas id="regionalChart" height="200"></canvas>
+                    </div>
+
+                    <!-- Top Performers -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Top Sales Performers</h3>
+                        <div id="topPerformers" class="space-y-3">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Critical Alerts -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mt-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">🚨 Critical Alerts</h3>
+                    <div id="criticalAlerts" class="space-y-3">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- PIPELINE TAB -->
+            <div id="content-pipeline" class="tab-content hidden">
+                <div class="grid grid-cols-3 gap-6 mb-6">
+                    <!-- Pipeline Funnel -->
+                    <div class="col-span-2 bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Sales Pipeline Funnel</h3>
+                        <canvas id="pipelineFunnelChart" height="150"></canvas>
+                    </div>
+
+                    <!-- Pipeline Summary -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Pipeline Summary</h3>
+                        <div id="pipelineSummary" class="space-y-3">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- At-Risk Deals -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">⚠️ At-Risk Deals (Stalled > 30 Days)</h3>
+                    <div id="atRiskDeals" class="space-y-3">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ORDERS TAB -->
+            <div id="content-orders" class="tab-content hidden">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Orders</h3>
+                        <div class="flex gap-2">
+                            <select class="border rounded px-3 py-2 text-sm" onchange="filterOrders(this.value)">
+                                <option value="all">All Orders</option>
+                                <option value="pending">Pending</option>
+                                <option value="fulfilled">Fulfilled</option>
+                                <option value="partial">Partially Fulfilled</option>
+                            </select>
+                            <button onclick="startVoiceOrder()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                                🎤 Create Order
+                            </button>
+                        </div>
+                    </div>
+                    <div id="ordersTable">
+                        <!-- Dynamically populated table -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- CUSTOMERS TAB -->
+            <div id="content-customers" class="tab-content hidden">
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Top Customers -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Top 10 Customers by Revenue</h3>
+                        <div id="topCustomers">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+
+                    <!-- At-Risk Customers -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">⚠️ At-Risk Customers</h3>
+                        <div id="atRiskCustomers">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCTS TAB -->
+            <div id="content-products" class="tab-content hidden">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Product Performance</h3>
+                    <canvas id="productPerformanceChart" height="100"></canvas>
+                </div>
+            </div>
+
+            <!-- INSIGHTS TAB -->
+            <div id="content-insights" class="tab-content hidden">
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">📈 Performance Insights</h3>
+                        <div id="performanceInsights">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">🎯 Recommendations</h3>
+                        <div id="recommendations">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Voice Order Modal -->
+    <div id="voiceModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full mx-4">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">🎤 Voice Order Creation</h3>
+            <div class="mb-6">
+                <div id="voiceStatus" class="text-center py-8">
+                    <div class="w-20 h-20 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-4xl">🎤</span>
+                    </div>
+                    <p class="text-gray-600">Click "Start Recording" and speak your order</p>
+                    <p class="text-sm text-gray-500 mt-2">Example: "Create a sales order for Disney, 500 tablets at $1,200 each"</p>
+                </div>
+                <div id="voiceTranscript" class="bg-gray-50 rounded-lg p-4 min-h-[100px] hidden">
+                    <p class="text-sm text-gray-600 mb-2">Transcript:</p>
+                    <p id="transcriptText" class="text-gray-800"></p>
+                </div>
+            </div>
+            <div id="orderDraft" class="hidden mb-6">
+                <h4 class="font-bold text-gray-800 mb-3">Review Order Draft:</h4>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div id="draftContent"></div>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="startVoiceRecording()" id="recordBtn" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+                    Start Recording
+                </button>
+                <button onclick="approveOrder()" id="approveBtn" class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium hidden">
+                    Approve & Submit
+                </button>
+                <button onclick="closeVoiceModal()" class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-medium">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let currentTab = 'overview';
+        let voiceRecognition = null;
+        let isRecording = false;
+
+        // Store chart instances to prevent memory leaks
+        let charts = {
+            revenueTrend: null,
+            regional: null,
+            pipelineFunnel: null,
+            productPerformance: null
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            loadDashboardData();
+            initializeCharts();
+            setupVoiceRecognition();
+
+            // Refresh data every 30 seconds
+            setInterval(loadDashboardData, 30000);
+        });
+
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.remove('tab-active'));
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            document.getElementById('tab-' + tabName).classList.add('tab-active');
+            currentTab = tabName;
+
+            // Load tab-specific data
+            if (tabName === 'pipeline') loadPipelineData();
+            if (tabName === 'orders') loadOrdersData();
+            if (tabName === 'customers') loadCustomersData();
+            if (tabName === 'products') loadProductsData();
+            if (tabName === 'insights') loadInsightsData();
+        }
+
+        async function loadDashboardData() {
+            try {
+                const mockData = {
+                    ordersFulfilled: 47,
+                    ordersFulfilledChange: 12,
+                    ordersPending: 23,
+                    ordersPendingValue: 450000,
+                    ordersReceived: 52,
+                    ordersReceivedValue: 2300000,
+                    pipelineValue: 12500000,
+                    pipelineDeals: 145,
+                    winRate: 42,
+                    winRateChange: -3,
+                    todayRevenue: 2300000,
+                    quarterProgress: 87
+                };
+
+                document.getElementById('ordersFulfilled').textContent = mockData.ordersFulfilled;
+                document.getElementById('ordersFulfilledChange').textContent = `↑ ${mockData.ordersFulfilledChange}% vs yesterday`;
+                document.getElementById('ordersPending').textContent = mockData.ordersPending;
+                document.getElementById('ordersPendingValue').textContent = `$${(mockData.ordersPendingValue / 1000).toFixed(0)}K`;
+                document.getElementById('ordersReceived').textContent = mockData.ordersReceived;
+                document.getElementById('ordersReceivedValue').textContent = `$${(mockData.ordersReceivedValue / 1000000).toFixed(1)}M`;
+                document.getElementById('pipelineValue').textContent = `$${(mockData.pipelineValue / 1000000).toFixed(1)}M`;
+                document.getElementById('pipelineDeals').textContent = `${mockData.pipelineDeals} deals`;
+                document.getElementById('winRate').textContent = `${mockData.winRate}%`;
+                document.getElementById('winRateChange').textContent = `↓ ${Math.abs(mockData.winRateChange)}% vs last month`;
+                document.getElementById('headerRevenue').textContent = `$${(mockData.todayRevenue / 1000000).toFixed(1)}M`;
+                document.getElementById('headerQuarterProgress').textContent = `${mockData.quarterProgress}%`;
+                document.getElementById('ordersNotif').textContent = mockData.ordersPending;
+
+                loadTopPerformers();
+                loadCriticalAlerts();
+
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        function loadTopPerformers() {
+            const performers = [
+                { name: 'Sarah Johnson', revenue: 890000, deals: 23 },
+                { name: 'Michael Chen', revenue: 750000, deals: 19 },
+                { name: 'Emily Rodriguez', revenue: 680000, deals: 17 }
+            ];
+
+            const html = performers.map((p, i) => `
+                <div class="flex items-center justify-between p-3 ${i === 0 ? 'bg-yellow-50 border-l-4 border-yellow-500' : 'bg-gray-50'} rounded-lg">
+                    <div>
+                        <p class="font-semibold text-gray-800">${i + 1}. ${p.name}</p>
+                        <p class="text-xs text-gray-600">${p.deals} deals closed</p>
+                    </div>
+                    <p class="text-lg font-bold text-green-600">$${(p.revenue / 1000).toFixed(0)}K</p>
+                </div>
+            `).join('');
+
+            document.getElementById('topPerformers').innerHTML = html;
+        }
+
+        function loadCriticalAlerts() {
+            const alerts = [
+                { title: 'Large Deal at Risk', desc: 'Disney deal ($500K) stalled for 45 days', priority: 'high' },
+                { title: 'Quarterly Target Gap', desc: 'Need $1.5M to hit Q4 target', priority: 'medium' }
+            ];
+
+            const html = alerts.map(a => `
+                <div class="bg-${a.priority === 'high' ? 'red' : 'orange'}-50 border-l-4 border-${a.priority === 'high' ? 'red' : 'orange'}-500 rounded-lg p-3">
+                    <p class="font-semibold text-${a.priority === 'high' ? 'red' : 'orange'}-800 text-sm">${a.title}</p>
+                    <p class="text-xs text-${a.priority === 'high' ? 'red' : 'orange'}-600 mt-1">${a.desc}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('criticalAlerts').innerHTML = html;
+        }
+
+        function initializeCharts() {
+            try {
+                // Revenue Trend Chart
+                const revenueTrendCtx = document.getElementById('revenueTrendChart');
+                if (revenueTrendCtx) {
+                    if (charts.revenueTrend) charts.revenueTrend.destroy();
+                    charts.revenueTrend = new Chart(revenueTrendCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                            datasets: [{
+                                label: 'Revenue',
+                                data: [2.1, 2.3, 2.0, 2.5, 2.8, 1.9, 2.3],
+                                borderColor: 'rgb(34, 197, 94)',
+                                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '$' + value + 'M';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Regional Chart
+                const regionalCtx = document.getElementById('regionalChart');
+                if (regionalCtx) {
+                    if (charts.regional) charts.regional.destroy();
+                    charts.regional = new Chart(regionalCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['North America', 'EMEA', 'APAC', 'LATAM'],
+                            datasets: [{
+                                label: 'Revenue',
+                                data: [5.8, 3.2, 2.9, 1.4],
+                                backgroundColor: [
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(34, 197, 94, 0.8)',
+                                    'rgba(168, 85, 247, 0.8)',
+                                    'rgba(251, 146, 60, 0.8)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '$' + value + 'M';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing charts:', error);
+            }
+        }
+
+        function initializePipelineChart() {
+            try {
+                const pipelineCtx = document.getElementById('pipelineFunnelChart');
+                if (pipelineCtx) {
+                    if (charts.pipelineFunnel) charts.pipelineFunnel.destroy();
+                    charts.pipelineFunnel = new Chart(pipelineCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won'],
+                            datasets: [{
+                                label: 'Deal Count',
+                                data: [145, 98, 67, 42, 28],
+                                backgroundColor: [
+                                    'rgba(59, 130, 246, 0.7)',
+                                    'rgba(34, 197, 94, 0.7)',
+                                    'rgba(251, 191, 36, 0.7)',
+                                    'rgba(251, 146, 60, 0.7)',
+                                    'rgba(16, 185, 129, 0.9)'
+                                ],
+                                borderColor: [
+                                    'rgb(59, 130, 246)',
+                                    'rgb(34, 197, 94)',
+                                    'rgb(251, 191, 36)',
+                                    'rgb(251, 146, 60)',
+                                    'rgb(16, 185, 129)'
+                                ],
+                                borderWidth: 2
+                            }, {
+                                label: 'Total Value',
+                                data: [18.5, 14.2, 10.8, 7.5, 5.2],
+                                backgroundColor: 'rgba(168, 85, 247, 0.3)',
+                                borderColor: 'rgb(168, 85, 247)',
+                                borderWidth: 2,
+                                type: 'line',
+                                yAxisID: 'y1'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.datasetIndex === 1) {
+                                                label += '$' + context.parsed.y + 'M';
+                                            } else {
+                                                label += context.parsed.y + ' deals';
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'left',
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Deal Count'
+                                    }
+                                },
+                                y1: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    beginAtZero: true,
+                                    grid: {
+                                        drawOnChartArea: false
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Value ($M)'
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '$' + value + 'M';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing pipeline chart:', error);
+            }
+        }
+
+        function initializeProductChart() {
+            try {
+                const productCtx = document.getElementById('productPerformanceChart');
+                if (productCtx) {
+                    if (charts.productPerformance) charts.productPerformance.destroy();
+                    charts.productPerformance = new Chart(productCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: [
+                                'Enterprise Software License',
+                                'Professional Services',
+                                'Cloud Subscription',
+                                'Hardware - Tablets',
+                                'Support & Maintenance',
+                                'Training Services',
+                                'Custom Development',
+                                'Hardware - Servers'
+                            ],
+                            datasets: [{
+                                label: 'Revenue ($M)',
+                                data: [4.2, 3.8, 3.5, 2.9, 2.1, 1.8, 1.5, 1.2],
+                                backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                                borderColor: 'rgb(59, 130, 246)',
+                                borderWidth: 1
+                            }, {
+                                label: 'Units Sold',
+                                data: [85, 120, 450, 890, 340, 95, 42, 156],
+                                backgroundColor: 'rgba(34, 197, 94, 0.6)',
+                                borderColor: 'rgb(34, 197, 94)',
+                                borderWidth: 1,
+                                yAxisID: 'y1'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) {
+                                                label += ': ';
+                                            }
+                                            if (context.datasetIndex === 0) {
+                                                label += '$' + context.parsed.x + 'M';
+                                            } else {
+                                                label += context.parsed.x + ' units';
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'bottom',
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Revenue ($M)'
+                                    }
+                                },
+                                x1: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'top',
+                                    beginAtZero: true,
+                                    grid: {
+                                        drawOnChartArea: false
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: 'Units Sold'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing product chart:', error);
+            }
+        }
+
+        // Voice Recognition
+        function setupVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window) {
+                voiceRecognition = new webkitSpeechRecognition();
+                voiceRecognition.continuous = false;
+                voiceRecognition.interimResults = false;
+                voiceRecognition.lang = 'en-US';
+
+                voiceRecognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    handleVoiceCommand(transcript);
+                };
+
+                voiceRecognition.onerror = function(event) {
+                    console.error('Voice recognition error:', event.error);
+                    alert('Voice recognition error: ' + event.error);
+                };
+            }
+        }
+
+        function startVoiceQuery() {
+            if (voiceRecognition) {
+                const btn = document.getElementById('voiceBtn');
+                btn.textContent = '🎤 Listening...';
+                btn.classList.add('voice-recording');
+                voiceRecognition.start();
+
+                voiceRecognition.onend = function() {
+                    btn.textContent = '🎤 Voice Command';
+                    btn.classList.remove('voice-recording');
+                };
+            } else {
+                alert('Voice recognition not supported in this browser');
+            }
+        }
+
+        function handleVoiceCommand(transcript) {
+            document.getElementById('aiQueryInput').value = transcript;
+            askAI();
+        }
+
+        async function askAI() {
+            const input = document.getElementById('aiQueryInput');
+            const query = input.value.trim();
+            if (!query) return;
+
+            const chatMessages = document.getElementById('aiChatMessages');
+
+            // User message
+            chatMessages.innerHTML += `
+                <div class="flex justify-end mb-3">
+                    <div class="bg-blue-500 text-white rounded-lg p-3 max-w-[85%]">
+                        <p class="text-sm">${query}</p>
+                    </div>
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            input.value = '';
+
+            // Loading indicator
+            chatMessages.innerHTML += `
+                <div id="loading" class="flex justify-start mb-3">
+                    <div class="bg-gray-200 rounded-lg p-3">
+                        <p class="text-sm text-gray-600">🤔 Thinking...</p>
+                    </div>
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                setTimeout(() => {
+                    document.getElementById('loading')?.remove();
+                    const response = generateMockAIResponse(query);
+                    chatMessages.innerHTML += `
+                        <div class="flex justify-start mb-3">
+                            <div class="bg-white border border-gray-200 rounded-lg p-3 max-w-[85%]">
+                                <p class="text-sm text-gray-700">${response}</p>
+                            </div>
+                        </div>
+                    `;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1500);
+            } catch (error) {
+                document.getElementById('loading')?.remove();
+                console.error('Error asking AI:', error);
+            }
+        }
+
+        function askQuick(query) {
+            document.getElementById('aiQueryInput').value = query;
+            askAI();
+        }
+
+        function generateMockAIResponse(query) {
+            const lowerQuery = query.toLowerCase();
+            if (lowerQuery.includes('orders') && lowerQuery.includes('today')) {
+                return "You received 52 orders today totaling $2.3M, which is 12% higher than yesterday. 47 orders are already fulfilled, and 23 are pending.";
+            } else if (lowerQuery.includes('pending') || lowerQuery.includes('100k')) {
+                return "You have 5 pending orders over $100K:\n1. Disney - $500K\n2. ABC Corp - $280K\n3. XYZ Ltd - $150K\n4. Tech Inc - $120K\n5. Global Co - $110K";
+            } else if (lowerQuery.includes('region')) {
+                return "North America: $5.8M (leading)\nEMEA: $3.2M\nAPAC: $2.9M\nLATAM: $1.4M (underperforming, 35% below target)";
+            } else if (lowerQuery.includes('compare') && lowerQuery.includes('quarter')) {
+                return "Q4 2025 vs Q3 2025:\n- Revenue: $45.2M (+8.5%)\n- Orders: 1,245 (+12%)\n- Win Rate: 42% (-3%)\n- Average Deal Size: $36.3K (+5%)";
+            } else if (lowerQuery.includes('create') || lowerQuery.includes('order')) {
+                return "I'll help you create an order. Use the 'Create Order (Voice)' button to speak your order details.";
+            } else {
+                return "I understand your question about: \"" + query + "\". Let me analyze the sales data and provide insights.";
+            }
+        }
+
+        // Voice Order Modal
+        function startVoiceOrder() {
+            document.getElementById('voiceModal').classList.remove('hidden');
+        }
+
+        function closeVoiceModal() {
+            document.getElementById('voiceModal').classList.add('hidden');
+            document.getElementById('voiceTranscript').classList.add('hidden');
+            document.getElementById('orderDraft').classList.add('hidden');
+            document.getElementById('approveBtn').classList.add('hidden');
+            isRecording = false;
+        }
+
+        function startVoiceRecording() {
+            if (voiceRecognition && !isRecording) {
+                isRecording = true;
+                const btn = document.getElementById('recordBtn');
+                btn.textContent = '🎤 Listening...';
+                btn.classList.add('voice-recording');
+
+                voiceRecognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('voiceTranscript').classList.remove('hidden');
+                    document.getElementById('transcriptText').textContent = transcript;
+                    processVoiceOrder(transcript);
+                };
+
+                voiceRecognition.onend = function() {
+                    btn.textContent = 'Start Recording';
+                    btn.classList.remove('voice-recording');
+                    isRecording = false;
+                };
+
+                voiceRecognition.start();
+            }
+        }
+
+        async function processVoiceOrder(transcript) {
+            setTimeout(() => {
+                const orderDraft = {
+                    customer: 'Disney',
+                    product: 'Tablets',
+                    quantity: 500,
+                    price: 1200,
+                    total: 600000
+                };
+
+                document.getElementById('orderDraft').classList.remove('hidden');
+                document.getElementById('draftContent').innerHTML = `
+                    <div class="space-y-2">
+                        <p><span class="font-semibold">Customer:</span> ${orderDraft.customer}</p>
+                        <p><span class="font-semibold">Product:</span> ${orderDraft.product}</p>
+                        <p><span class="font-semibold">Quantity:</span> ${orderDraft.quantity}</p>
+                        <p><span class="font-semibold">Unit Price:</span> $${orderDraft.price.toLocaleString()}</p>
+                        <p><span class="font-semibold text-green-600">Total:</span> <span class="text-green-600 text-xl font-bold">$${orderDraft.total.toLocaleString()}</span></p>
+                    </div>
+                `;
+                document.getElementById('approveBtn').classList.remove('hidden');
+            }, 1000);
+        }
+
+        async function approveOrder() {
+            alert('Order submitted successfully! Order #SO-12345 created.');
+            closeVoiceModal();
+        }
+
+        function generateReport() {
+            alert('Generating sales report...');
+        }
+
+        function loadPipelineData() {
+            console.log('Loading pipeline data...');
+            initializePipelineChart();
+            loadPipelineSummary();
+            loadAtRiskDeals();
+        }
+
+        function loadPipelineSummary() {
+            const summary = [
+                { stage: 'Lead', count: 145, value: 18.5, color: 'blue' },
+                { stage: 'Qualified', count: 98, value: 14.2, color: 'green' },
+                { stage: 'Proposal', count: 67, value: 10.8, color: 'yellow' },
+                { stage: 'Negotiation', count: 42, value: 7.5, color: 'orange' },
+                { stage: 'Closed Won', count: 28, value: 5.2, color: 'emerald' }
+            ];
+
+            const html = summary.map(s => `
+                <div class="bg-${s.color}-50 border-l-4 border-${s.color}-500 rounded-lg p-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-semibold text-gray-800 text-sm">${s.stage}</p>
+                            <p class="text-xs text-gray-600 mt-1">${s.count} deals</p>
+                        </div>
+                        <p class="text-lg font-bold text-${s.color}-600">$${s.value}M</p>
+                    </div>
+                </div>
+            `).join('');
+
+            const element = document.getElementById('pipelineSummary');
+            if (element) element.innerHTML = html;
+        }
+
+        function loadAtRiskDeals() {
+            const deals = [
+                { company: 'Disney Corporation', amount: 500000, days: 45, rep: 'Sarah Johnson' },
+                { company: 'Tech Giants Inc', amount: 280000, days: 38, rep: 'Michael Chen' },
+                { company: 'Global Retail Co', amount: 150000, days: 42, rep: 'Emily Rodriguez' }
+            ];
+
+            const html = deals.map(d => `
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-bold text-gray-800">${d.company}</h4>
+                        <span class="text-2xl font-bold text-red-600">$${(d.amount / 1000).toFixed(0)}K</span>
+                    </div>
+                    <p class="text-sm text-gray-600">🔴 Stalled for ${d.days} days | Rep: ${d.rep}</p>
+                    <div class="mt-3 flex gap-2">
+                        <button class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">Alert Rep</button>
+                        <button class="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">View Details</button>
+                    </div>
+                </div>
+            `).join('');
+
+            const element = document.getElementById('atRiskDeals');
+            if (element) element.innerHTML = html;
+        }
+
+        function loadOrdersData() {
+            console.log('Loading orders data...');
+            const orders = [
+                { number: 'SO-2025-1001', customer: 'Disney', date: '2025-11-05', amount: 49100, status: 'fulfilled' },
+                { number: 'SO-2025-1002', customer: 'Tech Giants', date: '2025-11-05', amount: 125000, status: 'pending' },
+                { number: 'SO-2025-1003', customer: 'Global Retail', date: '2025-11-04', amount: 78500, status: 'fulfilled' }
+            ];
+
+            const statusColors = {
+                'fulfilled': 'green',
+                'pending': 'yellow',
+                'partial': 'orange',
+                'cancelled': 'red'
+            };
+
+            const html = `
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Order #</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Customer</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Amount</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${orders.map(o => `
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="px-4 py-3 text-sm font-medium text-gray-800">${o.number}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">${o.customer}</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">${o.date}</td>
+                                    <td class="px-4 py-3 text-sm font-semibold text-gray-800">$${o.amount.toLocaleString()}</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-${statusColors[o.status]}-100 text-${statusColors[o.status]}-800">
+                                            ${o.status}
+                                        </span>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            const element = document.getElementById('ordersTable');
+            if (element) element.innerHTML = html;
+        }
+
+        function loadCustomersData() {
+            console.log('Loading customers data...');
+            const topCustomers = [
+                { name: 'Disney Corporation', revenue: 2500000, orders: 45, status: 'active' },
+                { name: 'Tech Giants Inc', revenue: 3200000, orders: 52, status: 'active' },
+                { name: 'Global Retail Co', revenue: 1800000, orders: 38, status: 'active' }
+            ];
+
+            const atRisk = [
+                { name: 'ABC Corp', lastOrder: '45 days ago', revenue: 450000 },
+                { name: 'XYZ Ltd', lastOrder: '60 days ago', revenue: 320000 }
+            ];
+
+            const topHtml = topCustomers.map((c, i) => `
+                <div class="flex items-center justify-between p-3 ${i === 0 ? 'bg-blue-50 border-l-4 border-blue-500' : 'bg-gray-50'} rounded-lg mb-3">
+                    <div>
+                        <p class="font-semibold text-gray-800">${i + 1}. ${c.name}</p>
+                        <p class="text-xs text-gray-600">${c.orders} orders | Active</p>
+                    </div>
+                    <p class="text-lg font-bold text-green-600">$${(c.revenue / 1000).toFixed(0)}K</p>
+                </div>
+            `).join('');
+
+            const riskHtml = atRisk.map(c => `
+                <div class="bg-orange-50 border-l-4 border-orange-500 rounded-lg p-3 mb-3">
+                    <p class="font-semibold text-orange-800">${c.name}</p>
+                    <p class="text-xs text-orange-600 mt-1">Last order: ${c.lastOrder}</p>
+                    <p class="text-xs text-gray-600">Lifetime value: $${(c.revenue / 1000).toFixed(0)}K</p>
+                    <button class="mt-2 px-3 py-1 bg-orange-600 text-white text-xs rounded hover:bg-orange-700">Re-engage</button>
+                </div>
+            `).join('');
+
+            const topElement = document.getElementById('topCustomers');
+            const riskElement = document.getElementById('atRiskCustomers');
+
+            if (topElement) topElement.innerHTML = topHtml;
+            if (riskElement) riskElement.innerHTML = riskHtml;
+        }
+
+        function loadProductsData() {
+            console.log('Loading products data...');
+            initializeProductChart();
+        }
+
+        function loadInsightsData() {
+            console.log('Loading insights data...');
+
+            const insights = [
+                { title: 'Revenue Trend', desc: 'Revenue is up 12% this week compared to last week', trend: 'up' },
+                { title: 'Win Rate', desc: 'Win rate decreased by 3% from last month', trend: 'down' },
+                { title: 'Pipeline Health', desc: 'Pipeline value increased to $12.5M (+8%)', trend: 'up' }
+            ];
+
+            const recommendations = [
+                { title: 'Focus on LATAM', desc: 'LATAM region is 35% behind target. Consider additional resources.' },
+                { title: 'Follow up on stalled deals', desc: '8 deals have been stalled for >30 days. Total value: $1.8M' },
+                { title: 'Upsell opportunity', desc: 'Disney has purchased tablets. Consider selling support packages.' }
+            ];
+
+            const insightsHtml = insights.map(i => `
+                <div class="bg-${i.trend === 'up' ? 'green' : 'orange'}-50 border-l-4 border-${i.trend === 'up' ? 'green' : 'orange'}-500 rounded-lg p-4 mb-3">
+                    <h4 class="font-bold text-gray-800 text-sm">${i.title}</h4>
+                    <p class="text-xs text-gray-600 mt-1">${i.desc}</p>
+                    <span class="text-${i.trend === 'up' ? 'green' : 'orange'}-600 text-lg">${i.trend === 'up' ? '↑' : '↓'}</span>
+                </div>
+            `).join('');
+
+            const recsHtml = recommendations.map(r => `
+                <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4 mb-3">
+                    <h4 class="font-bold text-gray-800 text-sm">${r.title}</h4>
+                    <p class="text-xs text-gray-600 mt-1">${r.desc}</p>
+                    <button class="mt-2 px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">Take Action</button>
+                </div>
+            `).join('');
+
+            const insightsElement = document.getElementById('performanceInsights');
+            const recsElement = document.getElementById('recommendations');
+
+            if (insightsElement) insightsElement.innerHTML = insightsHtml;
+            if (recsElement) recsElement.innerHTML = recsHtml;
+        }
+
+        function filterOrders(status) {
+            console.log('Filtering orders by:', status);
+        }
+
+        function updateRevenueTrend(period) {
+            console.log('Updating revenue trend for period:', period);
+        }
+    </script>
+</body>
+</html>

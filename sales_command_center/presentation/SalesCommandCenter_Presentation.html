@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Command Center - The AI Revolution</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
+            color: #1F2937;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            padding: 60px 100px;
+            background: white;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            font-size: 64px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #2563EB, #10B981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #1E40AF;
+        }
+
+        h3 {
+            font-size: 32px;
+            font-weight: 600;
+            margin: 20px 0 15px 0;
+            color: #2563EB;
+        }
+
+        p, li {
+            font-size: 24px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        ul {
+            margin-left: 40px;
+        }
+
+        .subtitle {
+            font-size: 36px;
+            color: #6B7280;
+            margin-bottom: 20px;
+        }
+
+        .tagline {
+            font-size: 28px;
+            color: #10B981;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        .big-number {
+            font-size: 72px;
+            font-weight: 900;
+            color: #10B981;
+            margin: 20px 0;
+        }
+
+        .red-number {
+            color: #EF4444;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-button:hover {
+            background: #1E40AF;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .nav-button:disabled {
+            background: #9CA3AF;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 40px;
+            left: 40px;
+            font-size: 18px;
+            color: #6B7280;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .comparison-item {
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .before {
+            background: #FEE2E2;
+            border-left: 4px solid #EF4444;
+        }
+
+        .after {
+            background: #D1FAE5;
+            border-left: 4px solid #10B981;
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .pillar {
+            padding: 25px;
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+            border-radius: 12px;
+            border-left: 4px solid #2563EB;
+        }
+
+        .pillar h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .highlight-box {
+            background: #FEF3C7;
+            border-left: 4px solid #F59E0B;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid #E5E7EB;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 48px;
+            font-weight: 900;
+            color: #10B981;
+        }
+
+        .stat-card .label {
+            font-size: 18px;
+            color: #6B7280;
+            margin-top: 10px;
+        }
+
+        /* Title slide specific */
+        .title-slide {
+            background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #10B981 100%);
+            color: white;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .title-slide h1 {
+            font-size: 80px;
+            color: white;
+            -webkit-text-fill-color: white;
+        }
+
+        .title-slide .subtitle,
+        .title-slide .tagline {
+            color: white;
+        }
+
+        .emoji {
+            font-size: 48px;
+            margin-right: 15px;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            padding: 20px 0;
+            border-top: 3px solid #2563EB;
+            position: relative;
+        }
+
+        .timeline-item {
+            flex: 1;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        .timeline-year {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2563EB;
+            margin-bottom: 10px;
+        }
+
+        .timeline-desc {
+            font-size: 18px;
+            color: #6B7280;
+        }
+
+        .closing-slide {
+            background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .closing-slide h1,
+        .closing-slide h2,
+        .closing-slide p {
+            color: white;
+        }
+
+        .contact-info {
+            margin-top: 40px;
+            font-size: 28px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #10B981;
+            color: white;
+            padding: 20px 40px;
+            font-size: 24px;
+            font-weight: 700;
+            border-radius: 12px;
+            margin: 20px 10px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            background: #059669;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide title-slide active">
+            <h1>🚀 SALES COMMAND CENTER</h1>
+            <p class="subtitle">The World's First AI-Powered Sales Transaction Command Platform</p>
+            <p class="tagline">From Reactive Reporting to Proactive Action</p>
+            <p style="margin-top: 60px; font-size: 24px;">November 2025</p>
+        </div>
+
+        <!-- Slide 2: The AI Revolution -->
+        <div class="slide">
+            <h2>The AI Revolution - Why Now?</h2>
+            <h3>The Perfect Storm of Opportunity</h3>
+
+            <div class="comparison-grid">
+                <div class="comparison-item before">
+                    <h3 style="font-size: 28px;">THEN (2020)</h3>
+                    <ul>
+                        <li>Static Reports</li>
+                        <li>Mobile Apps</li>
+                        <li>Search & Filter</li>
+                        <li>Analyze Only</li>
+                        <li>Hours to Act</li>
+                    </ul>
+                </div>
+                <div class="comparison-item after">
+                    <h3 style="font-size: 28px;">NOW (2025)</h3>
+                    <ul>
+                        <li>AI Conversations</li>
+                        <li>Voice Commands</li>
+                        <li>Proactive Insights</li>
+                        <li>Analyze + Execute</li>
+                        <li>Seconds to Act</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Three Converging Forces:</h3>
+                <p><strong>🧠 AI Maturity:</strong> GPT-4 & Claude with 95%+ accuracy</p>
+                <p><strong>📈 Market Demand:</strong> $5.2B → $12.8B by 2030</p>
+                <p><strong>⚙️ Technology Readiness:</strong> APIs everywhere, 5G instant access</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: The Problem -->
+        <div class="slide">
+            <h2>The $10 Billion Pain Point</h2>
+
+            <div style="margin: 30px 0;">
+                <div class="highlight-box" style="background: #FEE2E2; border-left-color: #EF4444;">
+                    <h3>😫 Data Fragmentation</h3>
+                    <p>7 different systems • 3-4 hours daily switching platforms</p>
+                    <p class="big-number" style="font-size: 48px; color: #EF4444;">$125K per manager annually</p>
+                </div>
+
+                <div class="highlight-box" style="background: #FEE2E2; border-left-color: #EF4444;">
+                    <h3>⏰ Delayed Insights</h3>
+                    <p>Reports take 2 weeks • Decisions on yesterday's data</p>
+                    <p class="big-number" style="font-size: 48px; color: #EF4444;">15-20% revenue loss</p>
+                </div>
+
+                <div class="highlight-box" style="background: #FEE2E2; border-left-color: #EF4444;">
+                    <h3>🐌 Manual Processes</h3>
+                    <p>20-30 minutes per order • 50+ clicks for simple metrics</p>
+                    <p class="big-number" style="font-size: 48px; color: #EF4444;">40% time on admin</p>
+                </div>
+            </div>
+
+            <p style="font-size: 32px; text-align: center; font-weight: 700; color: #EF4444; margin-top: 20px;">
+                For a $500M company: $18M annual loss
+            </p>
+        </div>
+
+        <!-- Slide 4: The Solution -->
+        <div class="slide">
+            <h2>SALES COMMAND CENTER</h2>
+            <h3>The 4 Revolutionary Pillars</h3>
+
+            <div class="pillars-grid">
+                <div class="pillar">
+                    <h3>🤖 CONVERSATIONAL AI</h3>
+                    <p style="font-size: 20px;">Talk to your data in natural language</p>
+                    <p style="font-size: 18px; color: #6B7280;">"Show me pending orders over $100K"<br>
+                    → Instant answer with insights</p>
+                </div>
+
+                <div class="pillar">
+                    <h3>🎤 VOICE-ACTIVATED</h3>
+                    <p style="font-size: 20px;">Hands-free power for busy executives</p>
+                    <p style="font-size: 18px; color: #6B7280;">"Create order for Disney, 500 tablets"<br>
+                    → 90 seconds vs 20 minutes</p>
+                </div>
+
+                <div class="pillar">
+                    <h3>⚡ REAL-TIME INTELLIGENCE</h3>
+                    <p style="font-size: 20px;">Live data, instant insights</p>
+                    <p style="font-size: 18px; color: #6B7280;">< 30 second latency<br>
+                    Interactive + AI-narrated</p>
+                </div>
+
+                <div class="pillar">
+                    <h3>🔄 TRANSACTIONAL</h3>
+                    <p style="font-size: 20px;">Beyond analysis - take action</p>
+                    <p style="font-size: 18px; color: #6B7280;">AI drafts → You approve → System executes<br>
+                    Direct ERP/CRM integration</p>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 25px; border-radius: 12px; text-align: center; margin-top: 30px;">
+                <h3 style="color: white; font-size: 32px;">The Game Changer: AI That Doesn't Just Report - It EXECUTES</h3>
+            </div>
+        </div>
+
+        <!-- Slide 5: A Day in the Life -->
+        <div class="slide">
+            <h2>A Day in the Life</h2>
+            <h3>Sarah Johnson - VP of Sales</h3>
+
+            <table style="width: 100%; margin: 30px 0; border-collapse: separate; border-spacing: 0 15px;">
+                <thead>
+                    <tr>
+                        <th style="font-size: 24px; text-align: left; padding: 10px;">Time</th>
+                        <th style="font-size: 24px; text-align: left; padding: 10px; background: #FEE2E2; border-radius: 8px 0 0 8px;">WITHOUT SCC</th>
+                        <th style="font-size: 24px; text-align: left; padding: 10px; background: #D1FAE5; border-radius: 0 8px 8px 0;">WITH SCC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight: 700; padding: 10px;">6:00 AM</td>
+                        <td style="padding: 10px; background: #FEE2E2;">❌ No insights yet</td>
+                        <td style="padding: 10px; background: #D1FAE5;">✅ AI morning briefing ready</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; padding: 10px;">8:00 AM</td>
+                        <td style="padding: 10px; background: #FEE2E2;">❌ 2 hours building reports</td>
+                        <td style="padding: 10px; background: #D1FAE5;">✅ 30 seconds asking AI</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; padding: 10px;">11:00 AM</td>
+                        <td style="padding: 10px; background: #FEE2E2;">❌ 25 min order entry</td>
+                        <td style="padding: 10px; background: #D1FAE5;">✅ 90 sec voice order</td>
+                    </tr>
+                    <tr>
+                        <td style="font-weight: 700; padding: 10px;">6:00 PM</td>
+                        <td style="padding: 10px; background: #FEE2E2;">❌ Still working</td>
+                        <td style="padding: 10px; background: #D1FAE5;">✅ Home with family</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number">4 hrs</div>
+                    <div class="label">Saved Per Day</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">35%</div>
+                    <div class="label">More Time Selling</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">$2.3M</div>
+                    <div class="label">More Closed in Q1</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: The Proof -->
+        <div class="slide">
+            <h2>The Proof - Real Results</h2>
+            <h3>Beta Customer: TechCorp Inc. ($500M Revenue)</h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 30px 0;">
+                <div>
+                    <h3>TIME METRICS</h3>
+                    <ul>
+                        <li>Daily data gathering: <strong style="color: #10B981;">-75%</strong></li>
+                        <li>Order creation: <strong style="color: #10B981;">-85%</strong></li>
+                        <li>Deal cycle: <strong style="color: #10B981;">-40%</strong></li>
+                    </ul>
+
+                    <h3 style="margin-top: 30px;">REVENUE IMPACT</h3>
+                    <ul>
+                        <li>Quarterly revenue: <strong style="color: #10B981;">+12%</strong></li>
+                        <li>Win rate: <strong style="color: #10B981;">+24%</strong></li>
+                        <li>Deal size: <strong style="color: #10B981;">+21%</strong></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 30px; border-radius: 12px; text-align: center;">
+                        <h3 style="color: white; margin-bottom: 20px;">YEAR 1 RESULTS</h3>
+                        <div style="font-size: 28px; margin: 15px 0;">Additional Revenue: <strong>$14.4M</strong></div>
+                        <div style="font-size: 28px; margin: 15px 0;">Cost Savings: <strong>$2.8M</strong></div>
+                        <div style="font-size: 28px; margin: 15px 0;">Investment: <strong>$2.0M</strong></div>
+                        <div style="font-size: 48px; font-weight: 900; margin-top: 30px; border-top: 2px solid white; padding-top: 20px;">
+                            NET ROI: 760%
+                        </div>
+                        <div style="font-size: 24px; margin-top: 10px;">Payback: 1.4 months</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <p style="font-size: 28px; font-style: italic;">
+                    "This isn't just a tool - it's a competitive advantage."
+                </p>
+                <p style="font-size: 20px; color: #6B7280; margin-top: 10px;">
+                    — Jennifer Martinez, VP Sales, TechCorp
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 7: The Market -->
+        <div class="slide">
+            <h2>The Market - A $10 Billion Opportunity</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label">2025 Market</div>
+                    <div class="number">$5.2B</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">2030 Market</div>
+                    <div class="number">$12.8B</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">CAGR</div>
+                    <div class="number">19.8%</div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 40px;">TARGET ADDRESSABLE MARKET (TAM)</h3>
+            <div style="margin: 20px 0;">
+                <p style="font-size: 22px;">Mid-Market B2B ($50M-$1B revenue): <strong>$21.6B</strong></p>
+                <p style="font-size: 22px;">Small Enterprise: <strong>$5.3B</strong></p>
+                <p style="font-size: 22px;">Growth Stage: <strong>$6.0B</strong></p>
+            </div>
+
+            <div style="background: #EFF6FF; padding: 30px; border-radius: 12px; text-align: center; margin: 30px 0;">
+                <h3 style="font-size: 36px;">TOTAL TAM: $32.9B</h3>
+                <p style="font-size: 28px; margin-top: 15px;">Our Year 5 Target: <strong style="color: #10B981;">$250M (3.8%)</strong></p>
+            </div>
+
+            <h3>OUR UNFAIR ADVANTAGES</h3>
+            <ul>
+                <li><strong>First-Mover:</strong> Only transactional sales AI</li>
+                <li><strong>AI-First:</strong> Built for AI, not retrofitted</li>
+                <li><strong>Voice-Native:</strong> Hands-free from day one</li>
+                <li><strong>Proven Results:</strong> 680% ROI</li>
+            </ul>
+        </div>
+
+        <!-- Slide 8: Business Model -->
+        <div class="slide">
+            <h2>The Business Model - Path to $250M ARR</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 30px 0;">
+                <div style="background: #EFF6FF; padding: 25px; border-radius: 12px; border-top: 4px solid #2563EB;">
+                    <h3 style="font-size: 28px;">💼 TEAM</h3>
+                    <div style="font-size: 36px; font-weight: 900; color: #2563EB; margin: 15px 0;">$199</div>
+                    <p style="font-size: 18px;">per user/month</p>
+                    <p style="font-size: 16px; color: #6B7280; margin-top: 10px;">5-25 users<br>Core features<br>Email support</p>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #2563EB, #1E40AF); color: white; padding: 25px; border-radius: 12px; transform: scale(1.05); box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);">
+                    <h3 style="font-size: 28px; color: white;">🚀 PROFESSIONAL ⭐</h3>
+                    <div style="font-size: 36px; font-weight: 900; margin: 15px 0;">$149</div>
+                    <p style="font-size: 18px;">per user/month</p>
+                    <p style="font-size: 16px; margin-top: 10px;">26-100 users<br>All features<br>MOST POPULAR</p>
+                </div>
+
+                <div style="background: #EFF6FF; padding: 25px; border-radius: 12px; border-top: 4px solid #2563EB;">
+                    <h3 style="font-size: 28px;">🏢 ENTERPRISE</h3>
+                    <div style="font-size: 36px; font-weight: 900; color: #2563EB; margin: 15px 0;">Custom</div>
+                    <p style="font-size: 18px;">pricing</p>
+                    <p style="font-size: 16px; color: #6B7280; margin-top: 10px;">100+ users<br>White-label<br>SLA guarantees</p>
+                </div>
+            </div>
+
+            <h3>5-YEAR PROJECTIONS</h3>
+            <table style="width: 100%; margin: 20px 0; border-collapse: collapse;">
+                <thead style="background: #EFF6FF;">
+                    <tr>
+                        <th style="padding: 15px; text-align: left;">Year</th>
+                        <th style="padding: 15px; text-align: center;">Customers</th>
+                        <th style="padding: 15px; text-align: center;">Users</th>
+                        <th style="padding: 15px; text-align: center;">ARR</th>
+                        <th style="padding: 15px; text-align: center;">Valuation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid #E5E7EB;">
+                        <td style="padding: 12px;">2026</td>
+                        <td style="padding: 12px; text-align: center;">50</td>
+                        <td style="padding: 12px; text-align: center;">3,750</td>
+                        <td style="padding: 12px; text-align: center;">$5M</td>
+                        <td style="padding: 12px; text-align: center;">$25M</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid #E5E7EB;">
+                        <td style="padding: 12px;">2027</td>
+                        <td style="padding: 12px; text-align: center;">200</td>
+                        <td style="padding: 12px; text-align: center;">15,000</td>
+                        <td style="padding: 12px; text-align: center;">$25M</td>
+                        <td style="padding: 12px; text-align: center;">$125M</td>
+                    </tr>
+                    <tr style="background: #D1FAE5; font-weight: 700;">
+                        <td style="padding: 12px;">2030</td>
+                        <td style="padding: 12px; text-align: center;">1,800</td>
+                        <td style="padding: 12px; text-align: center;">140,000</td>
+                        <td style="padding: 12px; text-align: center; color: #10B981; font-size: 24px;">$250M</td>
+                        <td style="padding: 12px; text-align: center; color: #10B981; font-size: 24px;">$1.25B</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Slide 9: The Ask -->
+        <div class="slide">
+            <h2>The Ask - Join the Revolution</h2>
+            <h3>$5M Seed Round</h3>
+
+            <div style="background: linear-gradient(135deg, #2563EB, #1E40AF); color: white; padding: 40px; border-radius: 12px; margin: 30px 0;">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px;">
+                    <div>
+                        <div style="font-size: 20px; margin-bottom: 10px;">💰 Raising</div>
+                        <div style="font-size: 48px; font-weight: 900;">$5,000,000</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 20px; margin-bottom: 10px;">📊 Valuation</div>
+                        <div style="font-size: 48px; font-weight: 900;">$25M</div>
+                        <div style="font-size: 18px;">(pre-money)</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 20px; margin-bottom: 10px;">📈 Equity</div>
+                        <div style="font-size: 48px; font-weight: 900;">20%</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 20px; margin-bottom: 10px;">📅 Timeline</div>
+                        <div style="font-size: 48px; font-weight: 900;">Q4 2025</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>USE OF FUNDS</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 20px 0;">
+                <div class="highlight-box">
+                    <h3 style="font-size: 24px;">💻 Product & Engineering (40%)</h3>
+                    <p style="font-size: 20px; font-weight: 700;">$2.0M</p>
+                    <p style="font-size: 18px; color: #6B7280;">10 engineers + AI/ML specialists</p>
+                </div>
+                <div class="highlight-box">
+                    <h3 style="font-size: 24px;">📢 Sales & Marketing (30%)</h3>
+                    <p style="font-size: 20px; font-weight: 700;">$1.5M</p>
+                    <p style="font-size: 18px; color: #6B7280;">10 sales reps + demand gen</p>
+                </div>
+                <div class="highlight-box">
+                    <h3 style="font-size: 24px;">⚙️ Operations (16%)</h3>
+                    <p style="font-size: 20px; font-weight: 700;">$800K</p>
+                    <p style="font-size: 18px; color: #6B7280;">AWS, security, support</p>
+                </div>
+                <div class="highlight-box">
+                    <h3 style="font-size: 24px;">🏢 G&A (14%)</h3>
+                    <p style="font-size: 20px; font-weight: 700;">$700K</p>
+                    <p style="font-size: 18px; color: #6B7280;">Executive hires, legal</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <h3 style="font-size: 32px;">Expected Returns</h3>
+                <p style="font-size: 28px; margin-top: 15px;">
+                    Conservative: <strong style="color: #10B981;">20x</strong> |
+                    Base: <strong style="color: #10B981;">40x</strong> |
+                    Optimistic: <strong style="color: #10B981;">60x</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Why Game Changer -->
+        <div class="slide">
+            <h2>Why This is a Game Changer</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">2020</div>
+                    <div class="timeline-desc">AI for Content</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2022</div>
+                    <div class="timeline-desc">AI for Analysis</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2024</div>
+                    <div class="timeline-desc">AI for Insights</div>
+                </div>
+                <div class="timeline-item" style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 15px; border-radius: 12px;">
+                    <div class="timeline-year" style="color: white; font-size: 28px;">2025 🚀</div>
+                    <div class="timeline-desc" style="color: white; font-weight: 700;">AI for TRANSACTIONS</div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 40px;">WHAT CHANGES EVERYTHING</h3>
+
+            <div class="comparison-grid" style="margin-top: 30px;">
+                <div>
+                    <div class="highlight-box" style="background: #FEE2E2;">
+                        <h3 style="font-size: 24px;">BEFORE</h3>
+                        <p>❌ "What happened?"</p>
+                        <p>❌ Shows data</p>
+                        <p>❌ 50 clicks, 20 minutes</p>
+                        <p>❌ 6 months deploy</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="highlight-box" style="background: #D1FAE5;">
+                        <h3 style="font-size: 24px;">AFTER</h3>
+                        <p>✅ "What will happen?" + Prevent</p>
+                        <p>✅ Shows + Suggests + EXECUTES</p>
+                        <p>✅ 1 command, 90 seconds</p>
+                        <p>✅ 2 weeks launch</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, #2563EB, #10B981); color: white; padding: 30px; border-radius: 12px; text-align: center; margin-top: 30px;">
+                <h3 style="color: white; font-size: 32px; margin-bottom: 20px;">Three Pillars of Game-Changing AI</h3>
+                <p style="font-size: 28px;">✅ ACCESSIBLE (anyone can use)</p>
+                <p style="font-size: 28px;">✅ ACTIONABLE (actually executes)</p>
+                <p style="font-size: 28px;">✅ AUTONOMOUS (learns & improves)</p>
+            </div>
+        </div>
+
+        <!-- Slide 11: Call to Action -->
+        <div class="slide">
+            <h2>Call to Action - Be Part of History</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; margin: 30px 0;">
+                <div style="background: #EFF6FF; padding: 30px; border-radius: 12px; border-left: 4px solid #2563EB;">
+                    <h3>🎯 FOR CUSTOMERS</h3>
+                    <p style="font-size: 20px; margin: 15px 0;">Ready to transform your sales organization?</p>
+                    <ul style="font-size: 18px; margin-left: 20px;">
+                        <li>Schedule a live demo</li>
+                        <li>Join pilot program (25 spots)</li>
+                        <li>20% early adopter discount</li>
+                    </ul>
+                    <p style="margin-top: 20px; font-weight: 700; color: #2563EB;">📧 sales@salescommandcenter.ai</p>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 30px; border-radius: 12px;">
+                    <h3 style="color: white;">💰 FOR INVESTORS</h3>
+                    <p style="font-size: 20px; margin: 15px 0;">Join us in building the future</p>
+                    <ul style="font-size: 18px; margin-left: 20px;">
+                        <li>$5M Seed at $25M pre-money</li>
+                        <li>Expected: 20-60x in 5-7 years</li>
+                        <li>Exit to Salesforce/Oracle/SAP</li>
+                    </ul>
+                    <p style="margin-top: 20px; font-weight: 700;">📧 invest@salescommandcenter.ai</p>
+                </div>
+
+                <div style="background: #FEF3C7; padding: 30px; border-radius: 12px; border-left: 4px solid #F59E0B;">
+                    <h3>🤝 FOR PARTNERS</h3>
+                    <p style="font-size: 20px; margin: 15px 0;">Build the ecosystem together</p>
+                    <ul style="font-size: 18px; margin-left: 20px;">
+                        <li>25-30% revenue share</li>
+                        <li>Implementation partnerships</li>
+                        <li>White-label opportunities</li>
+                    </ul>
+                    <p style="margin-top: 20px; font-weight: 700; color: #F59E0B;">📧 partners@salescommandcenter.ai</p>
+                </div>
+
+                <div style="background: #EFF6FF; padding: 30px; border-radius: 12px; border-left: 4px solid #2563EB;">
+                    <h3>💼 FOR TALENT</h3>
+                    <p style="font-size: 20px; margin: 15px 0;">Join the founding team</p>
+                    <ul style="font-size: 18px; margin-left: 20px;">
+                        <li>CTO, Engineers, VP Sales</li>
+                        <li>Ground floor equity</li>
+                        <li>Shape the future of sales</li>
+                    </ul>
+                    <p style="margin-top: 20px; font-weight: 700; color: #2563EB;">📧 careers@salescommandcenter.ai</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Closing -->
+        <div class="slide closing-slide">
+            <div style="text-align: center;">
+                <h1 style="font-size: 64px; margin-bottom: 40px;">The Revolution Starts Now</h1>
+
+                <p style="font-size: 36px; font-style: italic; margin: 40px 0; line-height: 1.6;">
+                    "In every industry, there's a moment when AI goes<br>
+                    from 'interesting' to 'indispensable.'<br><br>
+                    For sales, that moment is <strong>NOW.</strong><br><br>
+                    Sales Command Center is that moment."
+                </p>
+
+                <div style="margin: 50px 0;">
+                    <div class="stats-grid" style="max-width: 900px; margin: 0 auto;">
+                        <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px;">
+                            <div style="font-size: 42px; font-weight: 900;">75%</div>
+                            <div style="font-size: 18px;">Time Savings</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px;">
+                            <div style="font-size: 42px; font-weight: 900;">680%</div>
+                            <div style="font-size: 18px;">ROI Year 1</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px;">
+                            <div style="font-size: 42px; font-weight: 900;">$10B+</div>
+                            <div style="font-size: 18px;">Market</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="font-size: 48px; margin-top: 50px;">The Future of Sales is Voice-Activated,<br>AI-Powered, and Action-Oriented</h2>
+
+                <h2 style="font-size: 52px; margin-top: 30px; color: #10B981;">The Future of Sales is Sales Command Center</h2>
+
+                <div class="contact-info" style="margin-top: 50px;">
+                    <p>🌐 www.salescommandcenter.ai</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Thank You -->
+        <div class="slide closing-slide">
+            <h1 style="font-size: 72px;">Thank You</h1>
+            <h2 style="font-size: 42px; margin: 30px 0;">Let's Build the Future Together</h2>
+
+            <div style="font-size: 32px; margin: 50px 0;">
+                <p style="margin: 20px 0;">🚀 <strong>SALES COMMAND CENTER</strong> 🚀</p>
+                <p style="font-size: 28px; font-style: italic; margin: 30px 0;">
+                    Where AI Doesn't Just Analyze - It Acts
+                </p>
+            </div>
+
+            <div class="contact-info" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 40px; border-radius: 12px; max-width: 800px; margin: 50px auto;">
+                <p style="font-size: 32px; margin: 15px 0;">🌐 www.salescommandcenter.ai</p>
+                <p style="font-size: 32px; margin: 15px 0;">📧 hello@salescommandcenter.ai</p>
+                <p style="font-size: 32px; margin: 15px 0;">📱 +1 (555) 123-SALES</p>
+            </div>
+
+            <h2 style="font-size: 48px; margin-top: 60px;">Questions?</h2>
+        </div>
+    </div>
+
+    <div class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">13</span>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="previousSlide()">← Previous</button>
+        <button class="nav-button" id="nextBtn" onclick="nextSlide()">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+
+            // Update button states
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

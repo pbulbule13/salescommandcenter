@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone:*)",
+      "Bash(start sales_dashboard.html)",
+      "Bash(dir /B *.md)",
+      "Bash(pandoc:*)",
+      "Bash(start \"Sales Command Center Presentation\" \"C:\\Users\\pbkap\\Documents\\euron\\Projects\\salescommandcenter\\sales_command_center\\presentation\\SalesCommandCenter_Presentation.html\")",
+      "Bash(start \"\" \"C:\\Users\\pbkap\\Documents\\euron\\Projects\\salescommandcenter\\sales_command_center\\frontend\\sales_dashboard.html\")",
+      "Bash(grep:*)",
+      "Bash(git log:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

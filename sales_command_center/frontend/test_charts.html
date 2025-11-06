@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+        .chart-container { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        canvas { max-height: 300px; }
+        h2 { color: #333; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>Sales Dashboard - Chart Test Page</h1>
+    <div id="status"></div>
+
+    <div class="chart-container">
+        <h2>1. Revenue Trend Chart (Line)</h2>
+        <canvas id="chart1"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <h2>2. Regional Performance Chart (Bar)</h2>
+        <canvas id="chart2"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <h2>3. Pipeline Funnel Chart (Mixed)</h2>
+        <canvas id="chart3"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <h2>4. Product Performance Chart (Horizontal Bar)</h2>
+        <canvas id="chart4"></canvas>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        let successCount = 0;
+        let errorCount = 0;
+
+        function logStatus(message, isError = false) {
+            const div = document.createElement('div');
+            div.className = 'status ' + (isError ? 'error' : 'success');
+            div.textContent = message;
+            statusDiv.appendChild(div);
+            if (isError) errorCount++; else successCount++;
+        }
+
+        // Test Chart.js is loaded
+        if (typeof Chart !== 'undefined') {
+            logStatus('✓ Chart.js loaded successfully (Version: ' + Chart.version + ')');
+        } else {
+            logStatus('✗ Chart.js failed to load', true);
+        }
+
+        // Chart 1: Revenue Trend
+        try {
+            const ctx1 = document.getElementById('chart1');
+            if (ctx1) {
+                new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Revenue ($M)',
+                            data: [2.1, 2.3, 2.0, 2.5, 2.8, 1.9, 2.3],
+                            borderColor: 'rgb(34, 197, 94)',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: true }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value + 'M';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                logStatus('✓ Chart 1 (Revenue Trend) created successfully');
+            }
+        } catch (e) {
+            logStatus('✗ Chart 1 failed: ' + e.message, true);
+        }
+
+        // Chart 2: Regional Performance
+        try {
+            const ctx2 = document.getElementById('chart2');
+            if (ctx2) {
+                new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: ['North America', 'EMEA', 'APAC', 'LATAM'],
+                        datasets: [{
+                            label: 'Revenue ($M)',
+                            data: [5.8, 3.2, 2.9, 1.4],
+                            backgroundColor: [
+                                'rgba(59, 130, 246, 0.8)',
+                                'rgba(34, 197, 94, 0.8)',
+                                'rgba(168, 85, 247, 0.8)',
+                                'rgba(251, 146, 60, 0.8)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + value + 'M';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                logStatus('✓ Chart 2 (Regional Performance) created successfully');
+            }
+        } catch (e) {
+            logStatus('✗ Chart 2 failed: ' + e.message, true);
+        }
+
+        // Chart 3: Pipeline Funnel
+        try {
+            const ctx3 = document.getElementById('chart3');
+            if (ctx3) {
+                new Chart(ctx3, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Lead', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won'],
+                        datasets: [{
+                            label: 'Deal Count',
+                            data: [145, 98, 67, 42, 28],
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            borderWidth: 2,
+                            yAxisID: 'y'
+                        }, {
+                            label: 'Total Value ($M)',
+                            data: [18.5, 14.2, 10.8, 7.5, 5.2],
+                            backgroundColor: 'rgba(168, 85, 247, 0.3)',
+                            borderColor: 'rgb(168, 85, 247)',
+                            borderWidth: 2,
+                            type: 'line',
+                            yAxisID: 'y1'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Deal Count'
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                beginAtZero: true,
+                                grid: {
+                                    drawOnChartArea: false
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Value ($M)'
+                                }
+                            }
+                        }
+                    }
+                });
+                logStatus('✓ Chart 3 (Pipeline Funnel) created successfully');
+            }
+        } catch (e) {
+            logStatus('✗ Chart 3 failed: ' + e.message, true);
+        }
+
+        // Chart 4: Product Performance
+        try {
+            const ctx4 = document.getElementById('chart4');
+            if (ctx4) {
+                new Chart(ctx4, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            'Enterprise Software',
+                            'Professional Services',
+                            'Cloud Subscription',
+                            'Hardware - Tablets',
+                            'Support & Maintenance',
+                            'Training Services',
+                            'Custom Development',
+                            'Hardware - Servers'
+                        ],
+                        datasets: [{
+                            label: 'Revenue ($M)',
+                            data: [4.2, 3.8, 3.5, 2.9, 2.1, 1.8, 1.5, 1.2],
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Revenue ($M)'
+                                }
+                            }
+                        }
+                    }
+                });
+                logStatus('✓ Chart 4 (Product Performance) created successfully');
+            }
+        } catch (e) {
+            logStatus('✗ Chart 4 failed: ' + e.message, true);
+        }
+
+        // Final summary
+        setTimeout(() => {
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'status ' + (errorCount === 0 ? 'success' : 'error');
+            summaryDiv.innerHTML = '<h3>Test Summary: ' + successCount + ' passed, ' + errorCount + ' failed</h3>';
+            statusDiv.appendChild(summaryDiv);
+        }, 500);
+    </script>
+</body>
+</html>
