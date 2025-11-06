@@ -1,0 +1,46 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: sales-command-center-db
+    env: docker
+    plan: free
+    region: oregon
+    databaseName: sales_command_center
+    databaseUser: sales_admin
+    ipAllowList: []
+
+  # Web Service - FastAPI Backend
+  - type: web
+    name: sales-command-center
+    env: python
+    region: oregon
+    plan: free
+    branch: master
+    buildCommand: "./build.sh"
+    startCommand: "cd sales_command_center && uvicorn app:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PORT
+        value: 10000
+      - key: HOST
+        value: 0.0.0.0
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: False
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sales-command-center-db
+          property: connectionString
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
