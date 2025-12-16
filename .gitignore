@@ -1,0 +1,125 @@
+# ================================================
+# Sales Command Center - Root .gitignore
+# Protects sensitive information from being committed
+# ================================================
+
+# ==================== SENSITIVE FILES ====================
+# Environment files (NEVER commit these!)
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.*.local
+*.env
+
+# API Keys and Secrets
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*credentials*.json
+*secrets*.json
+*service-account*.json
+google-credentials.json
+firebase-credentials.json
+
+# ==================== PYTHON ====================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv/
+virtualenv/
+
+# ==================== IDE / EDITORS ====================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+.project
+.settings/
+*.tmproj
+
+# ==================== TESTING ====================
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+.tox/
+.nox/
+coverage.xml
+*.coveragerc
+
+# ==================== JUPYTER ====================
+.ipynb_checkpoints/
+
+# ==================== LOGS & DATABASES ====================
+*.log
+logs/
+*.db
+*.sqlite
+*.sqlite3
+
+# ==================== NODE (if any frontend tooling) ====================
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# ==================== OS FILES ====================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ==================== PROJECT SPECIFIC ====================
+*.lock
+.cache/
+temp/
+tmp/
+*.bak
+*.backup
+
+# Claude settings (local only)
+.claude/settings.local.json
+
+# ==================== KEEP THESE (Examples/Templates) ====================
+!.env.example
+!.env.template
+!*.example
