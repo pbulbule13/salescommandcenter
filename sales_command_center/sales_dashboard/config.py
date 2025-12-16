@@ -19,11 +19,33 @@ class Config:
     PORT = int(os.getenv("PORT", 8000))
     HOST = os.getenv("HOST", "0.0.0.0")
 
-    # LLM Configuration
+    # LLM Configuration - Fallback Strategy (Priority Order)
+    # 1. Euri AI (Primary)
+    EURI_API_KEY = os.getenv("EURI_API_KEY")
+    EURI_MODEL = os.getenv("EURI_MODEL", "euri-text-1")
+    EURI_BASE_URL = os.getenv("EURI_BASE_URL", "https://api.euron.one/api/v1")
+
+    # 2. DeepSeek (Secondary)
+    DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+    DEEPSEEK_MODEL = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
+    DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com/v1")
+
+    # 3. Google Gemini (Tertiary)
+    GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+    GOOGLE_MODEL = os.getenv("GOOGLE_MODEL", "gemini-1.5-flash")
+    GOOGLE_BASE_URL = os.getenv("GOOGLE_BASE_URL", "https://generativelanguage.googleapis.com/v1beta")
+
+    # 4. OpenAI (Fallback)
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4-turbo-preview")
+
+    # 5. Anthropic (Fallback)
     ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+    ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-3-sonnet-20240229")
+
+    # Legacy compatibility
     MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4-turbo-preview")
-    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai")  # openai or anthropic
+    LLM_PROVIDER = os.getenv("LLM_PROVIDER", "euri")  # euri, deepseek, google, openai, anthropic
     LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.7"))
     LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "2000"))
 
@@ -155,13 +177,73 @@ class Config:
 
     @classmethod
     def get_llm_config(cls) -> dict:
-        """Get LLM configuration as dictionary"""
+        """Get LLM configuration as dictionary (legacy compatibility)"""
         return {
             "provider": cls.LLM_PROVIDER,
             "model": cls.MODEL_NAME,
             "temperature": cls.LLM_TEMPERATURE,
             "max_tokens": cls.LLM_MAX_TOKENS,
             "api_key": cls.OPENAI_API_KEY if cls.LLM_PROVIDER == "openai" else cls.ANTHROPIC_API_KEY
+        }
+
+    @classmethod
+    def get_llm_fallback_config(cls) -> dict:
+        """
+        Get LLM fallback configuration with all providers.
+        Priority: Euri -> DeepSeek -> Google -> OpenAI -> Anthropic
+        """
+        providers = []
+
+        # 1. Euri AI (Primary)
+        if cls.EURI_API_KEY:
+            providers.append({
+                "provider": "euri",
+                "api_key": cls.EURI_API_KEY,
+                "model": cls.EURI_MODEL,
+                "base_url": cls.EURI_BASE_URL
+            })
+
+        # 2. DeepSeek (Secondary)
+        if cls.DEEPSEEK_API_KEY:
+            providers.append({
+                "provider": "deepseek",
+                "api_key": cls.DEEPSEEK_API_KEY,
+                "model": cls.DEEPSEEK_MODEL,
+                "base_url": cls.DEEPSEEK_BASE_URL
+            })
+
+        # 3. Google Gemini (Tertiary)
+        if cls.GOOGLE_API_KEY:
+            providers.append({
+                "provider": "google",
+                "api_key": cls.GOOGLE_API_KEY,
+                "model": cls.GOOGLE_MODEL,
+                "base_url": cls.GOOGLE_BASE_URL
+            })
+
+        # 4. OpenAI (Fallback)
+        if cls.OPENAI_API_KEY:
+            providers.append({
+                "provider": "openai",
+                "api_key": cls.OPENAI_API_KEY,
+                "model": cls.OPENAI_MODEL,
+                "base_url": "https://api.openai.com/v1"
+            })
+
+        # 5. Anthropic (Fallback)
+        if cls.ANTHROPIC_API_KEY:
+            providers.append({
+                "provider": "anthropic",
+                "api_key": cls.ANTHROPIC_API_KEY,
+                "model": cls.ANTHROPIC_MODEL,
+                "base_url": "https://api.anthropic.com/v1"
+            })
+
+        return {
+            "providers": providers,
+            "temperature": cls.LLM_TEMPERATURE,
+            "max_tokens": cls.LLM_MAX_TOKENS,
+            "primary_provider": cls.LLM_PROVIDER
         }
 
     @classmethod

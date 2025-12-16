@@ -9,9 +9,18 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import logging
+from pydantic import BaseModel
+from typing import Optional
 
 # Import configuration
 from sales_dashboard.config import config
+
+# Import LLM Fallback Service
+try:
+    from sales_dashboard.llm_service import get_llm_service, LLMProvider
+    LLM_SERVICE_AVAILABLE = True
+except ImportError:
+    LLM_SERVICE_AVAILABLE = False
 
 # Configure logging
 logging.basicConfig(
@@ -149,6 +158,166 @@ async def get_orders():
             }
         ]
     }
+
+
+# ============================================
+# LLM API Endpoints with Fallback Strategy
+# ============================================
+
+class ChatRequest(BaseModel):
+    """Request model for chat endpoint"""
+    message: str
+    system_prompt: Optional[str] = None
+    context: Optional[str] = None
+    preferred_provider: Optional[str] = None
+
+
+class ChatResponse(BaseModel):
+    """Response model for chat endpoint"""
+    content: str
+    provider: str
+    model: str
+    success: bool
+    error: Optional[str] = None
+    latency_ms: Optional[float] = None
+
+
+@app.get("/api/llm/status")
+async def get_llm_status():
+    """
+    Get status of all configured LLM providers.
+    Shows which providers are available and their priority order.
+    """
+    if not LLM_SERVICE_AVAILABLE:
+        return {
+            "available": False,
+            "message": "LLM service not available",
+            "providers": []
+        }
+
+    try:
+        llm_service = get_llm_service()
+        status = llm_service.get_provider_status()
+        return {
+            "available": True,
+            "fallback_strategy": "Euri -> DeepSeek -> Google -> OpenAI -> Anthropic",
+            **status
+        }
+    except Exception as e:
+        logger.error(f"Error getting LLM status: {e}")
+        return {
+            "available": False,
+            "message": str(e),
+            "providers": []
+        }
+
+
+@app.post("/api/llm/chat", response_model=ChatResponse)
+async def chat_with_llm(request: ChatRequest):
+    """
+    Send a message to the LLM with automatic fallback.
+
+    The service will try providers in order:
+    1. Euri AI (Primary)
+    2. DeepSeek (Secondary)
+    3. Google Gemini (Tertiary)
+    4. OpenAI (Fallback)
+    5. Anthropic (Fallback)
+
+    If a provider fails, it automatically tries the next one.
+    """
+    if not LLM_SERVICE_AVAILABLE:
+        return ChatResponse(
+            content="LLM service is not available. Please configure API keys.",
+            provider="none",
+            model="none",
+            success=False,
+            error="LLM service not available"
+        )
+
+    try:
+        llm_service = get_llm_service()
+
+        # Convert preferred provider string to enum if provided
+        preferred = None
+        if request.preferred_provider:
+            try:
+                preferred = LLMProvider(request.preferred_provider.lower())
+            except ValueError:
+                pass
+
+        response = llm_service.chat(
+            user_message=request.message,
+            system_prompt=request.system_prompt,
+            context=request.context,
+            preferred_provider=preferred
+        )
+
+        return ChatResponse(
+            content=response.content,
+            provider=response.provider.value,
+            model=response.model,
+            success=response.success,
+            error=response.error,
+            latency_ms=response.latency_ms
+        )
+
+    except Exception as e:
+        logger.error(f"Error in chat endpoint: {e}")
+        return ChatResponse(
+            content="An error occurred while processing your request.",
+            provider="none",
+            model="none",
+            success=False,
+            error=str(e)
+        )
+
+
+@app.post("/api/query/ask")
+async def ask_natural_language(request: ChatRequest):
+    """
+    Natural language query endpoint for the dashboard.
+    Uses the LLM fallback service to answer questions about sales data.
+    """
+    if not LLM_SERVICE_AVAILABLE:
+        return {
+            "success": False,
+            "response": "AI features are not available. Please configure LLM API keys.",
+            "provider": "none"
+        }
+
+    try:
+        llm_service = get_llm_service()
+
+        # System prompt for sales assistant
+        system_prompt = request.system_prompt or """
+        You are a helpful sales assistant for the Sales Command Center.
+        You help users understand their sales data, pipeline, orders, and business metrics.
+        Be concise, professional, and provide actionable insights when relevant.
+        If you don't have specific data, provide general guidance based on the question.
+        """
+
+        response = llm_service.chat(
+            user_message=request.message,
+            system_prompt=system_prompt,
+            context=request.context
+        )
+
+        return {
+            "success": response.success,
+            "response": response.content,
+            "provider": response.provider.value,
+            "model": response.model,
+            "latency_ms": response.latency_ms
+        }
+
+    except Exception as e:
+        logger.error(f"Error in ask endpoint: {e}")
+        return {
+            "success": False,
+            "response": "I apologize, but I encountered an error. Please try again.",
+            "error": str(e)
+        }
 
 # Error handler
 @app.exception_handler(Exception)
