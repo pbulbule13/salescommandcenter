@@ -150,25 +150,25 @@
                         </div>
                     </div>
                 </div>
-                <!-- Tab Navigation -->
-                <div class="flex gap-1 mt-4 border-b overflow-x-auto">
-                    <button onclick="switchTab('overview')" id="tab-overview" class="px-4 py-2 text-sm tab-active whitespace-nowrap">
-                        📊 Overview
+                <!-- Tab Navigation - Tabs are configurable via TAB_CONFIG in JavaScript -->
+                <div id="tabNavigation" class="flex gap-1 mt-4 border-b overflow-x-auto">
+                    <button onclick="switchTab('clevel')" id="tab-clevel" class="px-4 py-2 text-sm tab-active whitespace-nowrap">
+                        📊 C-level Overview
                     </button>
-                    <button onclick="switchTab('pipeline')" id="tab-pipeline" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
-                        🔄 Pipeline
+                    <button onclick="switchTab('sales')" id="tab-sales" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
+                        💰 Sales
                     </button>
-                    <button onclick="switchTab('orders')" id="tab-orders" class="px-4 py-2 text-sm hover:bg-gray-50 relative whitespace-nowrap">
-                        📦 Orders <span class="notification-badge" id="ordersNotif">0</span>
+                    <button onclick="switchTab('procurement')" id="tab-procurement" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
+                        🛒 Procurement
                     </button>
-                    <button onclick="switchTab('customers')" id="tab-customers" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
-                        🏢 Customers
+                    <button onclick="switchTab('inventory')" id="tab-inventory" class="px-4 py-2 text-sm hover:bg-gray-50 relative whitespace-nowrap">
+                        📦 Inventory <span class="notification-badge" id="inventoryNotif">0</span>
                     </button>
-                    <button onclick="switchTab('products')" id="tab-products" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
-                        🎯 Products
+                    <button onclick="switchTab('finap')" id="tab-finap" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
+                        💳 Fin - AP
                     </button>
-                    <button onclick="switchTab('insights')" id="tab-insights" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
-                        💡 Insights
+                    <button onclick="switchTab('finar')" id="tab-finar" class="px-4 py-2 text-sm hover:bg-gray-50 whitespace-nowrap">
+                        💵 Fin - AR
                     </button>
                 </div>
             </div>
@@ -177,34 +177,34 @@
         <!-- Content Container -->
         <div class="max-w-full mx-auto px-6 py-6">
 
-            <!-- OVERVIEW TAB -->
-            <div id="content-overview" class="tab-content fade-in">
+            <!-- C-LEVEL OVERVIEW TAB -->
+            <div id="content-clevel" class="tab-content fade-in">
                 <!-- Key Metrics Row -->
                 <div class="grid grid-cols-5 gap-4 mb-6">
                     <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 metric-card">
-                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Orders Fulfilled Today</h3>
-                        <p class="text-3xl font-bold text-gray-800" id="ordersFulfilled">0</p>
-                        <p class="text-sm text-green-600 mt-1" id="ordersFulfilledChange">↑ 0% vs yesterday</p>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500 metric-card">
-                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Orders Pending</h3>
-                        <p class="text-3xl font-bold text-gray-800" id="ordersPending">0</p>
-                        <p class="text-sm text-yellow-600 mt-1" id="ordersPendingValue">$0</p>
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Revenue (MTD)</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="totalRevenue">$0</p>
+                        <p class="text-sm text-green-600 mt-1" id="revenueChange">↑ 0% vs last month</p>
                     </div>
                     <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 metric-card">
-                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Orders Received Today</h3>
-                        <p class="text-3xl font-bold text-gray-800" id="ordersReceived">0</p>
-                        <p class="text-sm text-blue-600 mt-1" id="ordersReceivedValue">$0</p>
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Open Orders</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="openOrders">0</p>
+                        <p class="text-sm text-blue-600 mt-1" id="openOrdersValue">$0</p>
                     </div>
                     <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 metric-card">
-                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Pipeline Value</h3>
-                        <p class="text-3xl font-bold text-gray-800" id="pipelineValue">$0</p>
-                        <p class="text-sm text-purple-600 mt-1" id="pipelineDeals">0 deals</p>
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Cash Position</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="cashPosition">$0</p>
+                        <p class="text-sm text-purple-600 mt-1" id="cashFlow">+$0 this week</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Inventory Value</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="inventoryValue">$0</p>
+                        <p class="text-sm text-yellow-600 mt-1" id="inventoryTurnover">0x turnover</p>
                     </div>
                     <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 metric-card">
-                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Win Rate</h3>
-                        <p class="text-3xl font-bold text-gray-800" id="winRate">0%</p>
-                        <p class="text-sm text-orange-600 mt-1" id="winRateChange">↓ 0% vs last month</p>
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Profit Margin</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="profitMargin">0%</p>
+                        <p class="text-sm text-orange-600 mt-1" id="marginChange">↓ 0% vs target</p>
                     </div>
                 </div>
 
@@ -225,17 +225,17 @@
                         </div>
                     </div>
 
-                    <!-- Regional Performance -->
+                    <!-- Department Performance -->
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Regional Performance</h3>
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Department Performance</h3>
                         <div class="chart-container">
                             <canvas id="regionalChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- Top Performers -->
+                    <!-- Key Alerts -->
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Top Sales Performers</h3>
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Executive Alerts</h3>
                         <div id="topPerformers" class="space-y-3">
                             <!-- Dynamically populated -->
                         </div>
@@ -244,15 +244,44 @@
 
                 <!-- Critical Alerts -->
                 <div class="bg-white rounded-xl shadow-lg p-6 mt-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">🚨 Critical Alerts</h3>
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">🚨 Critical Business Alerts</h3>
                     <div id="criticalAlerts" class="space-y-3">
                         <!-- Dynamically populated -->
                     </div>
                 </div>
             </div>
 
-            <!-- PIPELINE TAB -->
-            <div id="content-pipeline" class="tab-content hidden">
+            <!-- SALES TAB -->
+            <div id="content-sales" class="tab-content hidden">
+                <!-- Sales Metrics Row -->
+                <div class="grid grid-cols-5 gap-4 mb-6">
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Orders Fulfilled Today</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="salesOrdersFulfilled">47</p>
+                        <p class="text-sm text-green-600 mt-1">↑ 12% vs yesterday</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Orders Pending</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="salesOrdersPending">23</p>
+                        <p class="text-sm text-yellow-600 mt-1">$450K value</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Pipeline Value</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="salesPipelineValue">$12.5M</p>
+                        <p class="text-sm text-blue-600 mt-1">145 deals</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Win Rate</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="salesWinRate">42%</p>
+                        <p class="text-sm text-purple-600 mt-1">↓ 3% vs last month</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Avg Deal Size</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="avgDealSize">$86K</p>
+                        <p class="text-sm text-orange-600 mt-1">↑ 5% vs Q3</p>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-3 gap-6 mb-6">
                     <!-- Pipeline Funnel -->
                     <div class="col-span-2 bg-white rounded-xl shadow-lg p-6">
@@ -280,74 +309,234 @@
                 </div>
             </div>
 
-            <!-- ORDERS TAB -->
-            <div id="content-orders" class="tab-content hidden">
+            <!-- PROCUREMENT TAB -->
+            <div id="content-procurement" class="tab-content hidden">
+                <!-- Procurement Metrics Row -->
+                <div class="grid grid-cols-5 gap-4 mb-6">
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Open POs</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="openPOs">34</p>
+                        <p class="text-sm text-blue-600 mt-1">$2.8M value</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">POs Received Today</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="posReceivedToday">8</p>
+                        <p class="text-sm text-green-600 mt-1">$450K value</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Pending Approvals</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="pendingApprovals">12</p>
+                        <p class="text-sm text-yellow-600 mt-1">$890K value</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Supplier Count</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="supplierCount">156</p>
+                        <p class="text-sm text-purple-600 mt-1">12 active this month</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Avg Lead Time</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="avgLeadTime">14d</p>
+                        <p class="text-sm text-orange-600 mt-1">↓ 2d vs last month</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <!-- Procurement by Category -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Procurement by Category</h3>
+                        <div class="chart-container">
+                            <canvas id="procurementCategoryChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Suppliers -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Top Suppliers by Spend</h3>
+                        <div id="topSuppliers" class="space-y-3">
+                            <!-- Dynamically populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Purchase Orders -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-2xl font-bold text-gray-800">Orders</h3>
-                        <div class="flex gap-2">
-                            <select class="border rounded px-3 py-2 text-sm" onchange="filterOrders(this.value)">
-                                <option value="all">All Orders</option>
-                                <option value="pending">Pending</option>
-                                <option value="fulfilled">Fulfilled</option>
-                                <option value="partial">Partially Fulfilled</option>
-                            </select>
-                            <button onclick="startVoiceOrder()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
-                                🎤 Create Order
-                            </button>
-                        </div>
-                    </div>
-                    <div id="ordersTable">
-                        <!-- Dynamically populated table -->
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">📋 Pending Purchase Orders</h3>
+                    <div id="pendingPOs" class="space-y-3">
+                        <!-- Dynamically populated -->
                     </div>
                 </div>
             </div>
 
-            <!-- CUSTOMERS TAB -->
-            <div id="content-customers" class="tab-content hidden">
-                <div class="grid grid-cols-2 gap-6">
-                    <!-- Top Customers -->
+            <!-- INVENTORY TAB -->
+            <div id="content-inventory" class="tab-content hidden">
+                <!-- Inventory Metrics Row -->
+                <div class="grid grid-cols-5 gap-4 mb-6">
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total SKUs</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="totalSKUs">1,245</p>
+                        <p class="text-sm text-blue-600 mt-1">Across 8 warehouses</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Stock Value</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="stockValue">$8.5M</p>
+                        <p class="text-sm text-green-600 mt-1">↑ 3% vs last month</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Low Stock Items</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="lowStockItems">18</p>
+                        <p class="text-sm text-red-600 mt-1">Requires reorder</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Out of Stock</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="outOfStock">5</p>
+                        <p class="text-sm text-yellow-600 mt-1">$125K backorder</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Inventory Turnover</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="invTurnover">4.2x</p>
+                        <p class="text-sm text-purple-600 mt-1">Annual rate</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <!-- Inventory by Category -->
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Top 10 Customers by Revenue</h3>
-                        <div id="topCustomers">
-                            <!-- Dynamically populated -->
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Inventory by Category</h3>
+                        <div class="chart-container">
+                            <canvas id="inventoryCategoryChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- At-Risk Customers -->
+                    <!-- Warehouse Distribution -->
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">⚠️ At-Risk Customers</h3>
-                        <div id="atRiskCustomers">
-                            <!-- Dynamically populated -->
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Warehouse Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="warehouseChart"></canvas>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- PRODUCTS TAB -->
-            <div id="content-products" class="tab-content hidden">
+                <!-- Low Stock Alerts -->
                 <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Product Performance</h3>
-                    <div class="chart-container" style="height: 400px;">
-                        <canvas id="productPerformanceChart"></canvas>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">⚠️ Low Stock Alerts</h3>
+                    <div id="lowStockAlerts" class="space-y-3">
+                        <!-- Dynamically populated -->
                     </div>
                 </div>
             </div>
 
-            <!-- INSIGHTS TAB -->
-            <div id="content-insights" class="tab-content hidden">
-                <div class="grid grid-cols-2 gap-6">
+            <!-- FIN - AP TAB (Accounts Payable) -->
+            <div id="content-finap" class="tab-content hidden">
+                <!-- AP Metrics Row -->
+                <div class="grid grid-cols-5 gap-4 mb-6">
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Payables</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="totalPayables">$3.2M</p>
+                        <p class="text-sm text-red-600 mt-1">Outstanding balance</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Due This Week</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="dueThisWeek">$890K</p>
+                        <p class="text-sm text-yellow-600 mt-1">15 invoices</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Overdue</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="overdueAP">$245K</p>
+                        <p class="text-sm text-orange-600 mt-1">8 invoices</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Paid This Month</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="paidThisMonth">$1.8M</p>
+                        <p class="text-sm text-green-600 mt-1">67 invoices</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Avg Days to Pay</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="avgDaysToPay">28d</p>
+                        <p class="text-sm text-blue-600 mt-1">vs 30d terms</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <!-- AP Aging Chart -->
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">📈 Performance Insights</h3>
-                        <div id="performanceInsights">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">AP Aging Summary</h3>
+                        <div class="chart-container">
+                            <canvas id="apAgingChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Vendors by Payables -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Top Vendors by Outstanding</h3>
+                        <div id="topVendorsAP" class="space-y-3">
                             <!-- Dynamically populated -->
                         </div>
                     </div>
+                </div>
+
+                <!-- Upcoming Payments -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">💳 Upcoming Payments Due</h3>
+                    <div id="upcomingPayments" class="space-y-3">
+                        <!-- Dynamically populated -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- FIN - AR TAB (Accounts Receivable) -->
+            <div id="content-finar" class="tab-content hidden">
+                <!-- AR Metrics Row -->
+                <div class="grid grid-cols-5 gap-4 mb-6">
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Receivables</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="totalReceivables">$5.8M</p>
+                        <p class="text-sm text-green-600 mt-1">Outstanding balance</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Due This Week</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="arDueThisWeek">$1.2M</p>
+                        <p class="text-sm text-blue-600 mt-1">28 invoices</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Overdue</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="overdueAR">$680K</p>
+                        <p class="text-sm text-red-600 mt-1">23 invoices</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">Collected This Month</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="collectedThisMonth">$4.2M</p>
+                        <p class="text-sm text-purple-600 mt-1">156 invoices</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 metric-card">
+                        <h3 class="text-sm font-semibold text-gray-600 mb-2">DSO</h3>
+                        <p class="text-3xl font-bold text-gray-800" id="dsoValue">34d</p>
+                        <p class="text-sm text-orange-600 mt-1">Days Sales Outstanding</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 mb-6">
+                    <!-- AR Aging Chart -->
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">🎯 Recommendations</h3>
-                        <div id="recommendations">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">AR Aging Summary</h3>
+                        <div class="chart-container">
+                            <canvas id="arAgingChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Top Customers by Receivables -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Top Customers by Outstanding</h3>
+                        <div id="topCustomersAR" class="space-y-3">
                             <!-- Dynamically populated -->
                         </div>
+                    </div>
+                </div>
+
+                <!-- Overdue Invoices -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">⚠️ Overdue Invoices - Collection Required</h3>
+                    <div id="overdueInvoices" class="space-y-3">
+                        <!-- Dynamically populated -->
                     </div>
                 </div>
             </div>
@@ -394,16 +583,64 @@
 
     <script>
         const API_BASE = 'http://localhost:8000';
-        let currentTab = 'overview';
+        let currentTab = 'clevel';
         let voiceRecognition = null;
         let isRecording = false;
+
+        // ============================================================
+        // TAB CONFIGURATION - EDIT THESE VALUES TO CHANGE TAB NAMES
+        // ============================================================
+        const TAB_CONFIG = {
+            clevel: {
+                id: 'clevel',
+                name: 'C-level Overview',
+                icon: '📊',
+                description: 'Executive summary and key metrics'
+            },
+            sales: {
+                id: 'sales',
+                name: 'Sales',
+                icon: '💰',
+                description: 'Sales pipeline and performance'
+            },
+            procurement: {
+                id: 'procurement',
+                name: 'Procurement',
+                icon: '🛒',
+                description: 'Procurement and purchasing'
+            },
+            inventory: {
+                id: 'inventory',
+                name: 'Inventory',
+                icon: '📦',
+                description: 'Stock and inventory management'
+            },
+            finap: {
+                id: 'finap',
+                name: 'Fin - AP',
+                icon: '💳',
+                description: 'Accounts Payable'
+            },
+            finar: {
+                id: 'finar',
+                name: 'Fin - AR',
+                icon: '💵',
+                description: 'Accounts Receivable'
+            }
+        };
+        // ============================================================
 
         // Store chart instances to prevent memory leaks
         let charts = {
             revenueTrend: null,
             regional: null,
             pipelineFunnel: null,
-            productPerformance: null
+            productPerformance: null,
+            salesPipeline: null,
+            procurementChart: null,
+            inventoryChart: null,
+            apChart: null,
+            arChart: null
         };
 
         // Initialize
@@ -430,44 +667,67 @@
             document.getElementById('tab-' + tabName).classList.add('tab-active');
             currentTab = tabName;
 
-            // Load tab-specific data
-            if (tabName === 'pipeline') loadPipelineData();
-            if (tabName === 'orders') loadOrdersData();
-            if (tabName === 'customers') loadCustomersData();
-            if (tabName === 'products') loadProductsData();
-            if (tabName === 'insights') loadInsightsData();
+            // Load tab-specific data based on new tab structure
+            if (tabName === 'clevel') loadCLevelData();
+            if (tabName === 'sales') loadSalesData();
+            if (tabName === 'procurement') loadProcurementData();
+            if (tabName === 'inventory') loadInventoryData();
+            if (tabName === 'finap') loadFinAPData();
+            if (tabName === 'finar') loadFinARData();
+        }
+
+        // Function to dynamically update tab names from TAB_CONFIG
+        function updateTabNames() {
+            Object.keys(TAB_CONFIG).forEach(key => {
+                const tab = TAB_CONFIG[key];
+                const tabButton = document.getElementById('tab-' + tab.id);
+                if (tabButton) {
+                    tabButton.innerHTML = `${tab.icon} ${tab.name}`;
+                    // Re-add notification badge for inventory tab
+                    if (tab.id === 'inventory') {
+                        tabButton.innerHTML += ' <span class="notification-badge" id="inventoryNotif">0</span>';
+                    }
+                }
+            });
         }
 
         async function loadDashboardData() {
             try {
+                // C-Level Overview mock data
                 const mockData = {
-                    ordersFulfilled: 47,
-                    ordersFulfilledChange: 12,
-                    ordersPending: 23,
-                    ordersPendingValue: 450000,
-                    ordersReceived: 52,
-                    ordersReceivedValue: 2300000,
-                    pipelineValue: 12500000,
-                    pipelineDeals: 145,
-                    winRate: 42,
-                    winRateChange: -3,
+                    totalRevenue: 45200000,
+                    revenueChange: 8.5,
+                    openOrders: 156,
+                    openOrdersValue: 4500000,
+                    cashPosition: 12800000,
+                    cashFlow: 890000,
+                    inventoryValue: 8500000,
+                    inventoryTurnover: 4.2,
+                    profitMargin: 23.5,
+                    marginChange: -1.2,
                     todayRevenue: 2300000,
                     quarterProgress: 87
                 };
 
-                document.getElementById('ordersFulfilled').textContent = mockData.ordersFulfilled;
-                document.getElementById('ordersFulfilledChange').textContent = `↑ ${mockData.ordersFulfilledChange}% vs yesterday`;
-                document.getElementById('ordersPending').textContent = mockData.ordersPending;
-                document.getElementById('ordersPendingValue').textContent = `$${(mockData.ordersPendingValue / 1000).toFixed(0)}K`;
-                document.getElementById('ordersReceived').textContent = mockData.ordersReceived;
-                document.getElementById('ordersReceivedValue').textContent = `$${(mockData.ordersReceivedValue / 1000000).toFixed(1)}M`;
-                document.getElementById('pipelineValue').textContent = `$${(mockData.pipelineValue / 1000000).toFixed(1)}M`;
-                document.getElementById('pipelineDeals').textContent = `${mockData.pipelineDeals} deals`;
-                document.getElementById('winRate').textContent = `${mockData.winRate}%`;
-                document.getElementById('winRateChange').textContent = `↓ ${Math.abs(mockData.winRateChange)}% vs last month`;
+                // Update C-Level Overview metrics
+                document.getElementById('totalRevenue').textContent = `$${(mockData.totalRevenue / 1000000).toFixed(1)}M`;
+                document.getElementById('revenueChange').textContent = `↑ ${mockData.revenueChange}% vs last month`;
+                document.getElementById('openOrders').textContent = mockData.openOrders;
+                document.getElementById('openOrdersValue').textContent = `$${(mockData.openOrdersValue / 1000000).toFixed(1)}M`;
+                document.getElementById('cashPosition').textContent = `$${(mockData.cashPosition / 1000000).toFixed(1)}M`;
+                document.getElementById('cashFlow').textContent = `+$${(mockData.cashFlow / 1000).toFixed(0)}K this week`;
+                document.getElementById('inventoryValue').textContent = `$${(mockData.inventoryValue / 1000000).toFixed(1)}M`;
+                document.getElementById('inventoryTurnover').textContent = `${mockData.inventoryTurnover}x turnover`;
+                document.getElementById('profitMargin').textContent = `${mockData.profitMargin}%`;
+                document.getElementById('marginChange').textContent = `↓ ${Math.abs(mockData.marginChange)}% vs target`;
+
+                // Update header metrics
                 document.getElementById('headerRevenue').textContent = `$${(mockData.todayRevenue / 1000000).toFixed(1)}M`;
                 document.getElementById('headerQuarterProgress').textContent = `${mockData.quarterProgress}%`;
-                document.getElementById('ordersNotif').textContent = mockData.ordersPending;
+
+                // Update inventory notification
+                const invNotif = document.getElementById('inventoryNotif');
+                if (invNotif) invNotif.textContent = '18';
 
                 loadTopPerformers();
                 loadCriticalAlerts();
@@ -477,20 +737,31 @@
             }
         }
 
+        function loadCLevelData() {
+            // C-Level data is loaded by default in loadDashboardData
+            console.log('Loading C-Level Overview data...');
+        }
+
         function loadTopPerformers() {
-            const performers = [
-                { name: 'Sarah Johnson', revenue: 890000, deals: 23 },
-                { name: 'Michael Chen', revenue: 750000, deals: 19 },
-                { name: 'Emily Rodriguez', revenue: 680000, deals: 17 }
+            // Executive Alerts for C-Level Overview
+            const alerts = [
+                { title: 'Sales Target', desc: '87% of Q4 target achieved', status: 'on-track', icon: '💰' },
+                { title: 'Cash Flow', desc: 'Positive $890K this week', status: 'good', icon: '💵' },
+                { title: 'Inventory Alert', desc: '18 items below reorder point', status: 'warning', icon: '📦' }
             ];
 
-            const html = performers.map((p, i) => `
-                <div class="flex items-center justify-between p-3 ${i === 0 ? 'bg-yellow-50 border-l-4 border-yellow-500' : 'bg-gray-50'} rounded-lg">
+            const statusColors = {
+                'on-track': 'blue',
+                'good': 'green',
+                'warning': 'yellow'
+            };
+
+            const html = alerts.map(a => `
+                <div class="flex items-center justify-between p-3 bg-${statusColors[a.status]}-50 border-l-4 border-${statusColors[a.status]}-500 rounded-lg">
                     <div>
-                        <p class="font-semibold text-gray-800">${i + 1}. ${p.name}</p>
-                        <p class="text-xs text-gray-600">${p.deals} deals closed</p>
+                        <p class="font-semibold text-gray-800 text-sm">${a.icon} ${a.title}</p>
+                        <p class="text-xs text-gray-600">${a.desc}</p>
                     </div>
-                    <p class="text-lg font-bold text-green-600">$${(p.revenue / 1000).toFixed(0)}K</p>
                 </div>
             `).join('');
 
@@ -499,8 +770,10 @@
 
         function loadCriticalAlerts() {
             const alerts = [
-                { title: 'Large Deal at Risk', desc: 'Disney deal ($500K) stalled for 45 days', priority: 'high' },
-                { title: 'Quarterly Target Gap', desc: 'Need $1.5M to hit Q4 target', priority: 'medium' }
+                { title: 'AR Overdue', desc: '$680K in overdue receivables (23 invoices)', priority: 'high' },
+                { title: 'Low Inventory', desc: '5 items out of stock, $125K backorder impact', priority: 'high' },
+                { title: 'AP Due This Week', desc: '$890K in payments due within 7 days', priority: 'medium' },
+                { title: 'Large Deal at Risk', desc: 'Disney deal ($500K) stalled for 45 days', priority: 'medium' }
             ];
 
             const html = alerts.map(a => `
@@ -553,20 +826,21 @@
                     });
                 }
 
-                // Regional Chart
+                // Department Performance Chart (for C-Level Overview)
                 const regionalCtx = document.getElementById('regionalChart');
                 if (regionalCtx) {
                     if (charts.regional) charts.regional.destroy();
                     charts.regional = new Chart(regionalCtx, {
                         type: 'bar',
                         data: {
-                            labels: ['North America', 'EMEA', 'APAC', 'LATAM'],
+                            labels: ['Sales', 'Procurement', 'Inventory', 'Fin - AP', 'Fin - AR'],
                             datasets: [{
-                                label: 'Revenue',
-                                data: [5.8, 3.2, 2.9, 1.4],
+                                label: 'Performance vs Target',
+                                data: [87, 92, 78, 95, 82],
                                 backgroundColor: [
-                                    'rgba(59, 130, 246, 0.8)',
                                     'rgba(34, 197, 94, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(251, 191, 36, 0.8)',
                                     'rgba(168, 85, 247, 0.8)',
                                     'rgba(251, 146, 60, 0.8)'
                                 ]
@@ -580,9 +854,10 @@
                             scales: {
                                 y: {
                                     beginAtZero: true,
+                                    max: 100,
                                     ticks: {
                                         callback: function(value) {
-                                            return '$' + value + 'M';
+                                            return value + '%';
                                         }
                                     }
                                 }
@@ -1172,6 +1447,410 @@
 
         function updateRevenueTrend(period) {
             console.log('Updating revenue trend for period:', period);
+        }
+
+        // ============================================================
+        // NEW TAB DATA LOADING FUNCTIONS
+        // ============================================================
+
+        function loadSalesData() {
+            console.log('Loading Sales data...');
+            initializePipelineChart();
+            loadPipelineSummary();
+            loadAtRiskDeals();
+        }
+
+        function loadProcurementData() {
+            console.log('Loading Procurement data...');
+            initializeProcurementChart();
+            loadTopSuppliers();
+            loadPendingPOs();
+        }
+
+        function initializeProcurementChart() {
+            try {
+                const ctx = document.getElementById('procurementCategoryChart');
+                if (ctx) {
+                    if (charts.procurementChart) charts.procurementChart.destroy();
+                    charts.procurementChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Raw Materials', 'Equipment', 'Services', 'Supplies', 'IT/Software'],
+                            datasets: [{
+                                data: [35, 25, 20, 12, 8],
+                                backgroundColor: [
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(34, 197, 94, 0.8)',
+                                    'rgba(168, 85, 247, 0.8)',
+                                    'rgba(251, 191, 36, 0.8)',
+                                    'rgba(251, 146, 60, 0.8)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: false,
+                            plugins: {
+                                legend: { position: 'right' }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing procurement chart:', error);
+            }
+        }
+
+        function loadTopSuppliers() {
+            const suppliers = [
+                { name: 'Acme Manufacturing', spend: 1200000, orders: 45 },
+                { name: 'Global Tech Solutions', spend: 890000, orders: 32 },
+                { name: 'Premier Materials Inc', spend: 650000, orders: 28 },
+                { name: 'Quality Components Ltd', spend: 450000, orders: 19 }
+            ];
+
+            const html = suppliers.map((s, i) => `
+                <div class="flex items-center justify-between p-3 ${i === 0 ? 'bg-blue-50 border-l-4 border-blue-500' : 'bg-gray-50'} rounded-lg">
+                    <div>
+                        <p class="font-semibold text-gray-800 text-sm">${i + 1}. ${s.name}</p>
+                        <p class="text-xs text-gray-600">${s.orders} orders this year</p>
+                    </div>
+                    <p class="text-lg font-bold text-blue-600">$${(s.spend / 1000).toFixed(0)}K</p>
+                </div>
+            `).join('');
+
+            const element = document.getElementById('topSuppliers');
+            if (element) element.innerHTML = html;
+        }
+
+        function loadPendingPOs() {
+            const pos = [
+                { number: 'PO-2025-0456', supplier: 'Acme Manufacturing', amount: 125000, dueDate: '2025-12-20', status: 'pending' },
+                { number: 'PO-2025-0457', supplier: 'Global Tech Solutions', amount: 89000, dueDate: '2025-12-18', status: 'approved' },
+                { number: 'PO-2025-0458', supplier: 'Premier Materials', amount: 67000, dueDate: '2025-12-22', status: 'pending' }
+            ];
+
+            const html = pos.map(p => `
+                <div class="bg-gray-50 border-l-4 border-${p.status === 'approved' ? 'green' : 'yellow'}-500 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <p class="font-bold text-gray-800">${p.number}</p>
+                            <p class="text-sm text-gray-600">${p.supplier}</p>
+                        </div>
+                        <span class="text-xl font-bold text-gray-800">$${(p.amount / 1000).toFixed(0)}K</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-xs text-gray-500">Due: ${p.dueDate}</p>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-${p.status === 'approved' ? 'green' : 'yellow'}-100 text-${p.status === 'approved' ? 'green' : 'yellow'}-800">${p.status}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            const element = document.getElementById('pendingPOs');
+            if (element) element.innerHTML = html;
+        }
+
+        function loadInventoryData() {
+            console.log('Loading Inventory data...');
+            initializeInventoryCharts();
+            loadLowStockAlerts();
+        }
+
+        function initializeInventoryCharts() {
+            try {
+                // Inventory by Category Chart
+                const catCtx = document.getElementById('inventoryCategoryChart');
+                if (catCtx) {
+                    if (charts.inventoryChart) charts.inventoryChart.destroy();
+                    charts.inventoryChart = new Chart(catCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Electronics', 'Raw Materials', 'Finished Goods', 'Packaging', 'Spare Parts'],
+                            datasets: [{
+                                data: [32, 28, 22, 10, 8],
+                                backgroundColor: [
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(34, 197, 94, 0.8)',
+                                    'rgba(168, 85, 247, 0.8)',
+                                    'rgba(251, 191, 36, 0.8)',
+                                    'rgba(251, 146, 60, 0.8)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: false,
+                            plugins: { legend: { position: 'right' } }
+                        }
+                    });
+                }
+
+                // Warehouse Distribution Chart
+                const whCtx = document.getElementById('warehouseChart');
+                if (whCtx) {
+                    new Chart(whCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Main WH', 'East Coast', 'West Coast', 'Central', 'International'],
+                            datasets: [{
+                                label: 'Stock Value ($M)',
+                                data: [3.2, 1.8, 1.5, 1.2, 0.8],
+                                backgroundColor: 'rgba(59, 130, 246, 0.8)'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { callback: v => '$' + v + 'M' }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing inventory charts:', error);
+            }
+        }
+
+        function loadLowStockAlerts() {
+            const items = [
+                { sku: 'SKU-1234', name: 'Widget A', current: 12, reorder: 50, status: 'critical' },
+                { sku: 'SKU-2345', name: 'Component B', current: 0, reorder: 100, status: 'out' },
+                { sku: 'SKU-3456', name: 'Part C', current: 25, reorder: 75, status: 'low' },
+                { sku: 'SKU-4567', name: 'Material D', current: 0, reorder: 200, status: 'out' }
+            ];
+
+            const statusConfig = {
+                'out': { color: 'red', label: 'Out of Stock' },
+                'critical': { color: 'red', label: 'Critical' },
+                'low': { color: 'yellow', label: 'Low Stock' }
+            };
+
+            const html = items.map(i => `
+                <div class="bg-${statusConfig[i.status].color}-50 border-l-4 border-${statusConfig[i.status].color}-500 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <p class="font-bold text-gray-800">${i.name}</p>
+                            <p class="text-xs text-gray-600">${i.sku}</p>
+                        </div>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-${statusConfig[i.status].color}-100 text-${statusConfig[i.status].color}-800">${statusConfig[i.status].label}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-sm text-gray-600">Current: <span class="font-bold">${i.current}</span> | Reorder Point: ${i.reorder}</p>
+                        <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">Create PO</button>
+                    </div>
+                </div>
+            `).join('');
+
+            const element = document.getElementById('lowStockAlerts');
+            if (element) element.innerHTML = html;
+        }
+
+        function loadFinAPData() {
+            console.log('Loading Fin - AP data...');
+            initializeAPChart();
+            loadTopVendorsAP();
+            loadUpcomingPayments();
+        }
+
+        function initializeAPChart() {
+            try {
+                const ctx = document.getElementById('apAgingChart');
+                if (ctx) {
+                    if (charts.apChart) charts.apChart.destroy();
+                    charts.apChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Current', '1-30 Days', '31-60 Days', '61-90 Days', '90+ Days'],
+                            datasets: [{
+                                label: 'Amount ($K)',
+                                data: [1800, 890, 320, 145, 45],
+                                backgroundColor: [
+                                    'rgba(34, 197, 94, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(251, 191, 36, 0.8)',
+                                    'rgba(251, 146, 60, 0.8)',
+                                    'rgba(239, 68, 68, 0.8)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { callback: v => '$' + v + 'K' }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing AP chart:', error);
+            }
+        }
+
+        function loadTopVendorsAP() {
+            const vendors = [
+                { name: 'Acme Manufacturing', amount: 450000, invoices: 12 },
+                { name: 'Global Tech Solutions', amount: 320000, invoices: 8 },
+                { name: 'Premier Materials Inc', amount: 280000, invoices: 15 },
+                { name: 'Quality Components Ltd', amount: 190000, invoices: 6 }
+            ];
+
+            const html = vendors.map((v, i) => `
+                <div class="flex items-center justify-between p-3 ${i === 0 ? 'bg-red-50 border-l-4 border-red-500' : 'bg-gray-50'} rounded-lg">
+                    <div>
+                        <p class="font-semibold text-gray-800 text-sm">${v.name}</p>
+                        <p class="text-xs text-gray-600">${v.invoices} invoices</p>
+                    </div>
+                    <p class="text-lg font-bold text-red-600">$${(v.amount / 1000).toFixed(0)}K</p>
+                </div>
+            `).join('');
+
+            const element = document.getElementById('topVendorsAP');
+            if (element) element.innerHTML = html;
+        }
+
+        function loadUpcomingPayments() {
+            const payments = [
+                { vendor: 'Acme Manufacturing', invoice: 'INV-2025-1234', amount: 125000, dueDate: '2025-12-18', daysUntil: 3 },
+                { vendor: 'Global Tech Solutions', invoice: 'INV-2025-1235', amount: 89000, dueDate: '2025-12-20', daysUntil: 5 },
+                { vendor: 'Premier Materials', invoice: 'INV-2025-1236', amount: 67000, dueDate: '2025-12-22', daysUntil: 7 }
+            ];
+
+            const html = payments.map(p => `
+                <div class="bg-${p.daysUntil <= 3 ? 'yellow' : 'gray'}-50 border-l-4 border-${p.daysUntil <= 3 ? 'yellow' : 'gray'}-500 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <p class="font-bold text-gray-800">${p.vendor}</p>
+                            <p class="text-xs text-gray-600">${p.invoice}</p>
+                        </div>
+                        <span class="text-xl font-bold text-gray-800">$${(p.amount / 1000).toFixed(0)}K</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-xs text-gray-500">Due: ${p.dueDate} (${p.daysUntil} days)</p>
+                        <button class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">Pay Now</button>
+                    </div>
+                </div>
+            `).join('');
+
+            const element = document.getElementById('upcomingPayments');
+            if (element) element.innerHTML = html;
+        }
+
+        function loadFinARData() {
+            console.log('Loading Fin - AR data...');
+            initializeARChart();
+            loadTopCustomersAR();
+            loadOverdueInvoices();
+        }
+
+        function initializeARChart() {
+            try {
+                const ctx = document.getElementById('arAgingChart');
+                if (ctx) {
+                    if (charts.arChart) charts.arChart.destroy();
+                    charts.arChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Current', '1-30 Days', '31-60 Days', '61-90 Days', '90+ Days'],
+                            datasets: [{
+                                label: 'Amount ($K)',
+                                data: [3200, 1450, 680, 320, 150],
+                                backgroundColor: [
+                                    'rgba(34, 197, 94, 0.8)',
+                                    'rgba(59, 130, 246, 0.8)',
+                                    'rgba(251, 191, 36, 0.8)',
+                                    'rgba(251, 146, 60, 0.8)',
+                                    'rgba(239, 68, 68, 0.8)'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: { callback: v => '$' + v + 'K' }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing AR chart:', error);
+            }
+        }
+
+        function loadTopCustomersAR() {
+            const customers = [
+                { name: 'Disney Corporation', amount: 680000, invoices: 8 },
+                { name: 'Tech Giants Inc', amount: 520000, invoices: 12 },
+                { name: 'Global Retail Co', amount: 380000, invoices: 6 },
+                { name: 'ABC Industries', amount: 290000, invoices: 9 }
+            ];
+
+            const html = customers.map((c, i) => `
+                <div class="flex items-center justify-between p-3 ${i === 0 ? 'bg-green-50 border-l-4 border-green-500' : 'bg-gray-50'} rounded-lg">
+                    <div>
+                        <p class="font-semibold text-gray-800 text-sm">${c.name}</p>
+                        <p class="text-xs text-gray-600">${c.invoices} invoices</p>
+                    </div>
+                    <p class="text-lg font-bold text-green-600">$${(c.amount / 1000).toFixed(0)}K</p>
+                </div>
+            `).join('');
+
+            const element = document.getElementById('topCustomersAR');
+            if (element) element.innerHTML = html;
+        }
+
+        function loadOverdueInvoices() {
+            const invoices = [
+                { customer: 'ABC Industries', invoice: 'INV-2025-0890', amount: 125000, daysOverdue: 45, status: 'critical' },
+                { customer: 'XYZ Corporation', invoice: 'INV-2025-0891', amount: 89000, daysOverdue: 32, status: 'warning' },
+                { customer: 'Tech Solutions Ltd', invoice: 'INV-2025-0892', amount: 67000, daysOverdue: 15, status: 'warning' }
+            ];
+
+            const html = invoices.map(i => `
+                <div class="bg-${i.status === 'critical' ? 'red' : 'orange'}-50 border-l-4 border-${i.status === 'critical' ? 'red' : 'orange'}-500 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <p class="font-bold text-gray-800">${i.customer}</p>
+                            <p class="text-xs text-gray-600">${i.invoice}</p>
+                        </div>
+                        <span class="text-xl font-bold text-${i.status === 'critical' ? 'red' : 'orange'}-600">$${(i.amount / 1000).toFixed(0)}K</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <p class="text-xs text-${i.status === 'critical' ? 'red' : 'orange'}-600 font-semibold">${i.daysOverdue} days overdue</p>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">Send Reminder</button>
+                            <button class="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded hover:bg-gray-300">Call</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            const element = document.getElementById('overdueInvoices');
+            if (element) element.innerHTML = html;
+        }
+
+        // Rename loadPipelineData to loadSalesData for compatibility
+        function loadPipelineData() {
+            loadSalesData();
         }
     </script>
 </body>
