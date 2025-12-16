@@ -42,15 +42,15 @@ services:
 
       # ============================================
       # LLM PROVIDERS - Fallback Strategy
-      # Priority: Euri -> DeepSeek -> Google -> OpenAI -> Anthropic
-      # Set at least one API key for AI features
+      # Priority: Euri -> DeepSeek -> Google
+      # Only set the keys you have - system works with any combination!
       # ============================================
 
       # 1. Euri AI (Primary) - https://euron.one
       - key: EURI_API_KEY
         sync: false
       - key: EURI_MODEL
-        value: "euri-text-1"
+        value: "gpt-4o-mini"
 
       # 2. DeepSeek (Secondary) - https://deepseek.com
       - key: DEEPSEEK_API_KEY
@@ -64,25 +64,17 @@ services:
       - key: GOOGLE_MODEL
         value: "gemini-1.5-flash"
 
-      # 4. OpenAI (Fallback) - https://openai.com
+      # Optional: Additional fallback providers (leave empty if not used)
       - key: OPENAI_API_KEY
         sync: false
-      - key: OPENAI_MODEL
-        value: "gpt-4-turbo-preview"
-
-      # 5. Anthropic (Fallback) - https://anthropic.com
       - key: ANTHROPIC_API_KEY
         sync: false
-      - key: ANTHROPIC_MODEL
-        value: "claude-3-sonnet-20240229"
 
       # LLM General Settings
       - key: LLM_TEMPERATURE
         value: "0.7"
       - key: LLM_MAX_TOKENS
         value: "2000"
-      - key: LLM_PROVIDER
-        value: "euri"
 
       # ============================================
       # Security

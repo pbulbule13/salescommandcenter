@@ -148,17 +148,39 @@ class Config:
     @classmethod
     def validate(cls):
         """Validate that required configuration is present"""
-        required_vars = [
-            ('OPENAI_API_KEY', cls.OPENAI_API_KEY),
-            ('DATABASE_URL', cls.DATABASE_URL),
+        # Database is required
+        if not cls.DATABASE_URL:
+            raise ValueError("Missing required environment variable: DATABASE_URL")
+
+        # At least ONE LLM provider should be configured (not required, just a warning)
+        llm_keys = [
+            cls.EURI_API_KEY,
+            cls.DEEPSEEK_API_KEY,
+            cls.GOOGLE_API_KEY,
+            cls.OPENAI_API_KEY,
+            cls.ANTHROPIC_API_KEY
         ]
 
-        missing_vars = [var_name for var_name, var_value in required_vars if not var_value]
-
-        if missing_vars:
-            raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
+        if not any(llm_keys):
+            import logging
+            logging.warning(
+                "No LLM API keys configured. AI features will be disabled. "
+                "Set at least one of: EURI_API_KEY, DEEPSEEK_API_KEY, GOOGLE_API_KEY, "
+                "OPENAI_API_KEY, or ANTHROPIC_API_KEY"
+            )
 
         return True
+
+    @classmethod
+    def has_llm_provider(cls) -> bool:
+        """Check if at least one LLM provider is configured"""
+        return any([
+            cls.EURI_API_KEY,
+            cls.DEEPSEEK_API_KEY,
+            cls.GOOGLE_API_KEY,
+            cls.OPENAI_API_KEY,
+            cls.ANTHROPIC_API_KEY
+        ])
 
     @classmethod
     def get_database_url(cls) -> str:
