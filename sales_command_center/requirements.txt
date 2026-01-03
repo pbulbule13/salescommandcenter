@@ -26,8 +26,9 @@ python-jose[cryptography]
 passlib[bcrypt]
 pyjwt
 
-# CORS
+# CORS & Sessions
 starlette
+itsdangerous
 
 # Utilities
 python-dateutil

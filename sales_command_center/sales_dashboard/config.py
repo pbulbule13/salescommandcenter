@@ -90,6 +90,10 @@ class Config:
     JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
     JWT_EXPIRATION_MINUTES = int(os.getenv("JWT_EXPIRATION_MINUTES", "30"))
 
+    # Simple Login Authentication (for dashboard access)
+    APP_USERNAME = os.getenv("APP_USERNAME")
+    APP_PASSWORD = os.getenv("APP_PASSWORD")
+
     # OAuth Configuration
     OAUTH_PROVIDER = os.getenv("OAUTH_PROVIDER", "okta")  # okta, azure, etc.
     OAUTH_CLIENT_ID = os.getenv("OAUTH_CLIENT_ID")
