@@ -11,6 +11,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from pathlib import Path
 import logging
 import secrets
+import os
 from pydantic import BaseModel
 from typing import Optional
 
@@ -74,7 +75,15 @@ def is_authenticated(request: Request) -> bool:
 
 def auth_enabled() -> bool:
     """Check if authentication is enabled (credentials are set)"""
-    return bool(config.APP_USERNAME and config.APP_PASSWORD)
+    # Read directly from environment at runtime (not from config class)
+    username = os.getenv("APP_USERNAME")
+    password = os.getenv("APP_PASSWORD")
+    return bool(username and password)
+
+
+def get_auth_credentials():
+    """Get auth credentials from environment at runtime"""
+    return os.getenv("APP_USERNAME"), os.getenv("APP_PASSWORD")
 
 
 # ============================================
@@ -98,8 +107,11 @@ async def login_page(request: Request):
 @app.post("/auth/login")
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
     """Handle login form submission"""
+    # Get credentials from environment at runtime
+    valid_username, valid_password = get_auth_credentials()
+
     # Check credentials
-    if username == config.APP_USERNAME and password == config.APP_PASSWORD:
+    if username == valid_username and password == valid_password:
         request.session["authenticated"] = True
         request.session["username"] = username
         logger.info(f"User '{username}' logged in successfully")
